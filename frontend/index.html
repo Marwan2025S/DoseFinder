@@ -1,0 +1,191 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 40 40'%3E%3Crect width='16' height='16' rx='3' fill='%2313b6ec'/%3E%3Crect x='20' width='20' height='8' rx='3' fill='%2313b6ec'/%3E%3Crect x='20' y='12' width='20' height='8' rx='3' fill='%2313b6ec'/%3E%3Crect y='20' width='16' height='8' rx='3' fill='%2313b6ec'/%3E%3Crect y='32' width='16' height='8' rx='3' fill='%2313b6ec'/%3E%3Crect x='20' y='24' width='20' height='16' rx='3' fill='%2313b6ec'/%3E%3C/svg%3E" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>DoseFinder</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com"/>
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+    <!-- Google Identity Services (Sign in with Google). No-op until VITE_GOOGLE_CLIENT_ID is set. -->
+    <script src="https://accounts.google.com/gsi/client" async defer></script>
+    <link href="https://fonts.googleapis.com/css2?family=Lexend:wght@400;500;700&family=Lato:wght@400;700&family=Montserrat:wght@800;900&family=Sora:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700&family=DM+Sans:wght@400;500;700&display=swap" rel="stylesheet"/>
+    <style>
+      :root {
+        --boot-blue: #13b6ec;
+        --boot-teal: #2ec4a9;
+        --boot-pink: #ff6b9d;
+        --boot-ink: #0f1b2d;
+        --boot-muted: #4a5568;
+      }
+
+      body {
+        margin: 0;
+        background: #ffffff;
+      }
+
+      .boot-loading-screen {
+        min-height: 100vh;
+        min-height: 100svh;
+        display: grid;
+        place-items: center;
+        padding: 32px 20px;
+        box-sizing: border-box;
+        background: linear-gradient(180deg, #f7fbff 0%, #ffffff 54%, #f3fcfa 100%);
+        color: var(--boot-ink);
+        font-family: "DM Sans", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      }
+
+      .boot-loading-screen__content {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 18px;
+        text-align: center;
+      }
+
+      .boot-loading-screen__brand {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 14px;
+      }
+
+      .boot-loading-screen__mark {
+        width: 64px;
+        height: 64px;
+        border-radius: 8px;
+        display: grid;
+        place-items: center;
+        background: #ffffff;
+        color: var(--boot-blue);
+        box-shadow: 0 12px 34px rgba(19, 182, 236, .18), inset 0 0 0 1px rgba(19, 182, 236, .14);
+        animation: bootLoaderPulse 1.8s ease-in-out infinite;
+      }
+
+      .boot-loading-screen__mark svg {
+        width: 42px;
+        height: 42px;
+      }
+
+      .boot-loading-screen__wordmark {
+        font-family: "Sora", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+        font-size: 34px;
+        font-weight: 800;
+        line-height: 1;
+        letter-spacing: 0;
+      }
+
+      .boot-loading-screen__wordmark span {
+        color: var(--boot-blue);
+      }
+
+      .boot-loading-screen__track {
+        width: 220px;
+        max-width: 60vw;
+        height: 5px;
+        border-radius: 8px;
+        overflow: hidden;
+        background: #d7ebff;
+      }
+
+      .boot-loading-screen__track span {
+        display: block;
+        width: 46%;
+        height: 100%;
+        border-radius: 8px;
+        background: linear-gradient(90deg, var(--boot-blue), var(--boot-teal), var(--boot-pink));
+        animation: bootLoaderSweep 1.1s ease-in-out infinite;
+      }
+
+      .boot-loading-screen__text {
+        margin: -4px 0 0;
+        color: var(--boot-muted);
+        font-size: 14px;
+        font-weight: 600;
+        line-height: 1.5;
+      }
+
+      @keyframes bootLoaderPulse {
+        0%,
+        100% {
+          transform: translateY(0) scale(1);
+        }
+
+        50% {
+          transform: translateY(-3px) scale(1.03);
+        }
+      }
+
+      @keyframes bootLoaderSweep {
+        0% {
+          transform: translateX(-120%);
+        }
+
+        100% {
+          transform: translateX(220%);
+        }
+      }
+
+      @media (max-width: 480px) {
+        .boot-loading-screen__brand {
+          gap: 12px;
+        }
+
+        .boot-loading-screen__mark {
+          width: 56px;
+          height: 56px;
+        }
+
+        .boot-loading-screen__mark svg {
+          width: 36px;
+          height: 36px;
+        }
+
+        .boot-loading-screen__wordmark {
+          font-size: 28px;
+        }
+
+        .boot-loading-screen__track {
+          width: 190px;
+          max-width: 72vw;
+        }
+      }
+
+      @media (prefers-reduced-motion: reduce) {
+        .boot-loading-screen__mark,
+        .boot-loading-screen__track span {
+          animation: none;
+        }
+
+        .boot-loading-screen__track span {
+          width: 100%;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div id="root">
+      <div class="boot-loading-screen" role="status" aria-live="polite" aria-busy="true">
+        <div class="boot-loading-screen__content">
+          <div class="boot-loading-screen__brand" aria-label="Loading DoseFinder">
+            <span class="boot-loading-screen__mark">
+              <svg viewBox="0 0 40 40" fill="none" aria-hidden="true">
+                <rect x="0" y="0" width="16" height="16" rx="3" fill="currentColor"></rect>
+                <rect x="20" y="0" width="20" height="8" rx="3" fill="currentColor"></rect>
+                <rect x="20" y="12" width="20" height="8" rx="3" fill="currentColor"></rect>
+                <rect x="0" y="20" width="16" height="8" rx="3" fill="currentColor"></rect>
+                <rect x="0" y="32" width="16" height="8" rx="3" fill="currentColor"></rect>
+                <rect x="20" y="24" width="20" height="16" rx="3" fill="currentColor"></rect>
+              </svg>
+            </span>
+            <span class="boot-loading-screen__wordmark">Dose<span>Finder</span></span>
+          </div>
+          <div class="boot-loading-screen__track" aria-hidden="true"><span></span></div>
+          <p class="boot-loading-screen__text">Preparing your medication workspace...</p>
+        </div>
+      </div>
+    </div>
+    <script type="module" src="/src/main.jsx"></script>
+  </body>
+</html>

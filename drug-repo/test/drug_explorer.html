@@ -1,0 +1,1980 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Drug Explorer</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=DM+Mono:ital,wght@0,300;0,400;0,500;1,300&family=Syne:wght@400;500;600;700;800&family=Literata:ital,wght@0,300;0,400;1,300&display=swap" rel="stylesheet">
+<style>
+/* ── Reset & Variables ──────────────────────────────────────────────────── */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --bg:         #07090f;
+  --surface:    #0d1117;
+  --surface2:   #131920;
+  --surface3:   #1a2330;
+  --border:     #1e2d3d;
+  --border2:    #263545;
+  --teal:       #00c9a7;
+  --teal-dim:   #00917a;
+  --teal-glow:  rgba(0,201,167,0.12);
+  --teal-glow2: rgba(0,201,167,0.06);
+  --amber:      #f0a500;
+  --amber-dim:  #b37800;
+  --red:        #e05c5c;
+  --red-dim:    #8c3535;
+  --blue:       #4fa3e0;
+  --text:       #c8d8e8;
+  --text2:      #7a92a8;
+  --text3:      #3d5468;
+  --white:      #e8f0f8;
+  --mono:       'DM Mono', monospace;
+  --sans:       'Syne', sans-serif;
+  --serif:      'Literata', Georgia, serif;
+  --radius:     6px;
+  --radius2:    10px;
+  --shadow:     0 4px 24px rgba(0,0,0,0.5);
+  --shadow2:    0 2px 8px rgba(0,0,0,0.35);
+}
+
+html { scroll-behavior: smooth; }
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--serif);
+  font-size: 15px;
+  line-height: 1.6;
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+/* ── Grid noise overlay ─────────────────────────────────────────────────── */
+body::before {
+  content: '';
+  position: fixed; inset: 0; z-index: 0;
+  pointer-events: none;
+  background-image:
+    linear-gradient(rgba(0,201,167,0.015) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(0,201,167,0.015) 1px, transparent 1px);
+  background-size: 40px 40px;
+}
+
+/* ── Scrollbar ──────────────────────────────────────────────────────────── */
+::-webkit-scrollbar { width: 6px; height: 6px; }
+::-webkit-scrollbar-track { background: var(--surface); }
+::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: var(--teal-dim); }
+
+/* ── Layout ─────────────────────────────────────────────────────────────── */
+#app {
+  position: relative; z-index: 1;
+  display: grid;
+  grid-template-columns: 300px 1fr;
+  grid-template-rows: 56px 1fr;
+  grid-template-areas: "header header" "sidebar main";
+  height: 100vh;
+}
+
+/* ── Header ─────────────────────────────────────────────────────────────── */
+#header {
+  grid-area: header;
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  padding: 0 20px;
+  gap: 16px;
+  position: sticky; top: 0; z-index: 100;
+}
+.logo {
+  font-family: var(--sans);
+  font-weight: 800;
+  font-size: 17px;
+  letter-spacing: -0.02em;
+  color: var(--white);
+  display: flex; align-items: center; gap: 10px;
+  flex-shrink: 0;
+}
+.logo-mark {
+  width: 28px; height: 28px;
+  background: var(--teal);
+  border-radius: 5px;
+  display: grid; place-items: center;
+  font-size: 13px; font-weight: 800;
+  color: var(--bg);
+}
+.header-sep { width: 1px; height: 24px; background: var(--border); }
+
+/* Global search bar */
+.global-search {
+  flex: 1; max-width: 520px;
+  position: relative;
+}
+.global-search input {
+  width: 100%;
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 8px 40px 8px 36px;
+  font-family: var(--mono);
+  font-size: 13px;
+  color: var(--text);
+  outline: none;
+  transition: border-color 0.15s, box-shadow 0.15s;
+}
+.global-search input:focus {
+  border-color: var(--teal-dim);
+  box-shadow: 0 0 0 3px var(--teal-glow);
+}
+.global-search input::placeholder { color: var(--text3); }
+.search-icon {
+  position: absolute; left: 11px; top: 50%; transform: translateY(-50%);
+  color: var(--text3); pointer-events: none; font-size: 14px;
+}
+.search-clear {
+  position: absolute; right: 10px; top: 50%; transform: translateY(-50%);
+  color: var(--text3); cursor: pointer; font-size: 16px;
+  display: none; background: none; border: none; padding: 0;
+  line-height: 1;
+}
+.search-clear:hover { color: var(--text2); }
+
+/* Stats chips */
+.header-stats { margin-left: auto; display: flex; gap: 8px; align-items: center; }
+.stat-chip {
+  font-family: var(--mono); font-size: 11px;
+  color: var(--text2); background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: 4px; padding: 3px 8px;
+}
+.stat-chip span { color: var(--teal); }
+
+/* ── Sidebar ─────────────────────────────────────────────────────────────── */
+#sidebar {
+  grid-area: sidebar;
+  background: var(--surface);
+  border-right: 1px solid var(--border);
+  overflow-y: auto;
+  display: flex; flex-direction: column;
+  gap: 0;
+}
+.sidebar-section {
+  padding: 16px;
+  border-bottom: 1px solid var(--border);
+}
+.sidebar-label {
+  font-family: var(--sans); font-size: 10px; font-weight: 600;
+  letter-spacing: 0.12em; text-transform: uppercase;
+  color: var(--text3); margin-bottom: 10px;
+}
+
+/* Filter controls */
+.filter-group { display: flex; flex-direction: column; gap: 8px; }
+
+.filter-row { display: flex; flex-direction: column; gap: 4px; }
+.filter-row label {
+  font-family: var(--mono); font-size: 11px; color: var(--text2);
+}
+.filter-input, .filter-select {
+  width: 100%;
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 7px 10px;
+  font-family: var(--mono); font-size: 12px;
+  color: var(--text); outline: none;
+  transition: border-color 0.15s;
+}
+.filter-input:focus, .filter-select:focus {
+  border-color: var(--teal-dim);
+  box-shadow: 0 0 0 3px var(--teal-glow);
+}
+.filter-select option { background: var(--surface2); }
+.filter-input::placeholder { color: var(--text3); }
+
+.price-range { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; }
+
+/* Tag input */
+.tag-input-wrap {
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 5px 8px;
+  display: flex; flex-wrap: wrap; gap: 4px;
+  min-height: 36px; align-items: center;
+  transition: border-color 0.15s;
+  cursor: text;
+}
+.tag-input-wrap:focus-within {
+  border-color: var(--teal-dim);
+  box-shadow: 0 0 0 3px var(--teal-glow);
+}
+.tag-input-wrap input {
+  background: none; border: none; outline: none;
+  font-family: var(--mono); font-size: 12px; color: var(--text);
+  min-width: 80px; flex: 1;
+}
+.tag-input-wrap input::placeholder { color: var(--text3); }
+.tag {
+  display: inline-flex; align-items: center; gap: 4px;
+  background: var(--teal-glow); border: 1px solid var(--teal-dim);
+  border-radius: 3px; padding: 1px 6px;
+  font-family: var(--mono); font-size: 11px; color: var(--teal);
+}
+.tag-remove { cursor: pointer; opacity: 0.6; font-size: 13px; }
+.tag-remove:hover { opacity: 1; }
+
+/* Sort controls */
+.sort-row { display: grid; grid-template-columns: 1fr auto; gap: 6px; }
+.sort-dir-btn {
+  background: var(--surface2); border: 1px solid var(--border);
+  border-radius: var(--radius); padding: 7px 10px;
+  font-family: var(--mono); font-size: 12px; color: var(--text2);
+  cursor: pointer; transition: all 0.15s; white-space: nowrap;
+}
+.sort-dir-btn:hover, .sort-dir-btn.active { border-color: var(--teal-dim); color: var(--teal); }
+
+/* Apply / Clear */
+.sidebar-actions {
+  display: flex; gap: 8px; padding: 14px 16px; margin-top: auto;
+}
+.btn {
+  flex: 1; padding: 9px 14px;
+  font-family: var(--sans); font-size: 13px; font-weight: 600;
+  border-radius: var(--radius); cursor: pointer; transition: all 0.15s;
+  border: none; outline: none;
+}
+.btn-primary {
+  background: var(--teal); color: var(--bg);
+}
+.btn-primary:hover { background: #00b394; }
+.btn-ghost {
+  background: transparent; color: var(--text2);
+  border: 1px solid var(--border);
+}
+.btn-ghost:hover { border-color: var(--border2); color: var(--text); }
+
+/* ── Main Panel ──────────────────────────────────────────────────────────── */
+#main {
+  grid-area: main;
+  overflow-y: auto;
+  display: flex; flex-direction: column;
+}
+
+/* Results bar */
+#results-bar {
+  padding: 12px 20px;
+  border-bottom: 1px solid var(--border);
+  display: flex; align-items: center; gap: 12px;
+  background: var(--surface);
+  position: sticky; top: 0; z-index: 50;
+  flex-shrink: 0;
+}
+.results-count {
+  font-family: var(--mono); font-size: 12px; color: var(--text2);
+}
+.results-count strong { color: var(--teal); font-weight: 500; }
+.results-per-page {
+  margin-left: auto;
+  display: flex; align-items: center; gap: 8px;
+  font-family: var(--mono); font-size: 12px; color: var(--text2);
+}
+.results-per-page select {
+  background: var(--surface2); border: 1px solid var(--border);
+  border-radius: 4px; padding: 3px 6px;
+  font-family: var(--mono); font-size: 12px; color: var(--text);
+  outline: none;
+}
+
+/* ── Drug Grid ───────────────────────────────────────────────────────────── */
+#drug-grid {
+  padding: 20px;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 14px;
+  align-content: start;
+}
+
+/* Drug card */
+.drug-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius2);
+  padding: 16px;
+  cursor: pointer;
+  transition: border-color 0.15s, transform 0.12s, box-shadow 0.15s;
+  position: relative; overflow: hidden;
+  animation: cardIn 0.25s ease both;
+}
+@keyframes cardIn {
+  from { opacity: 0; transform: translateY(8px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+.drug-card:hover {
+  border-color: var(--teal-dim);
+  box-shadow: 0 0 0 1px var(--teal-dim), var(--shadow2);
+  transform: translateY(-1px);
+}
+.drug-card::before {
+  content: '';
+  position: absolute; top: 0; left: 0; right: 0; height: 2px;
+  background: linear-gradient(90deg, var(--teal), transparent);
+  opacity: 0; transition: opacity 0.15s;
+}
+.drug-card:hover::before { opacity: 1; }
+
+.card-source {
+  font-family: var(--mono); font-size: 10px; font-weight: 500;
+  letter-spacing: 0.1em; text-transform: uppercase;
+  padding: 2px 7px; border-radius: 3px; margin-bottom: 10px;
+  display: inline-block;
+}
+.card-source.medscape { background: rgba(79,163,224,0.12); color: var(--blue); border: 1px solid rgba(79,163,224,0.2); }
+.card-source.dms      { background: rgba(240,165,0,0.10);  color: var(--amber); border: 1px solid rgba(240,165,0,0.2); }
+.card-source.openfda  { background: rgba(0,201,167,0.12);  color: var(--teal); border: 1px solid rgba(0,201,167,0.24); }
+.card-source.fda      { background: rgba(0,201,167,0.12);  color: var(--teal); border: 1px solid rgba(0,201,167,0.24); }
+
+.card-name {
+  font-family: var(--sans); font-weight: 700; font-size: 15px;
+  color: var(--white); line-height: 1.3; margin-bottom: 3px;
+}
+.card-generic {
+  font-family: var(--serif); font-style: italic; font-size: 13px;
+  color: var(--text2); margin-bottom: 10px;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+
+.card-meta {
+  display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 12px;
+}
+.card-badge {
+  font-family: var(--mono); font-size: 10px;
+  background: var(--surface2); border: 1px solid var(--border2);
+  border-radius: 3px; padding: 2px 6px; color: var(--text2);
+}
+
+.card-price {
+  font-family: var(--mono); font-size: 16px; font-weight: 500;
+  color: var(--teal);
+}
+.card-price.no-price { color: var(--text3); font-size: 12px; }
+
+.card-id {
+  position: absolute; bottom: 12px; right: 14px;
+  font-family: var(--mono); font-size: 10px; color: var(--text3);
+}
+
+/* ── Empty / Loading / Error states ─────────────────────────────────────── */
+.state-display {
+  flex: 1; display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  gap: 12px; padding: 60px 20px;
+  text-align: center;
+}
+.state-icon { font-size: 40px; opacity: 0.3; }
+.state-title {
+  font-family: var(--sans); font-size: 18px; font-weight: 600; color: var(--text2);
+}
+.state-sub { font-size: 13px; color: var(--text3); }
+
+/* Spinner */
+.spinner {
+  width: 36px; height: 36px;
+  border: 2px solid var(--border);
+  border-top-color: var(--teal);
+  border-radius: 50%;
+  animation: spin 0.7s linear infinite;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* ── Pagination ──────────────────────────────────────────────────────────── */
+#pagination {
+  padding: 16px 20px;
+  display: flex; align-items: center; justify-content: center; gap: 6px;
+  border-top: 1px solid var(--border);
+  flex-shrink: 0;
+}
+.page-btn {
+  background: var(--surface2); border: 1px solid var(--border);
+  border-radius: var(--radius); padding: 6px 12px;
+  font-family: var(--mono); font-size: 12px; color: var(--text2);
+  cursor: pointer; transition: all 0.12s;
+}
+.page-btn:hover:not(:disabled) { border-color: var(--teal-dim); color: var(--teal); }
+.page-btn.active { background: var(--teal); border-color: var(--teal); color: var(--bg); }
+.page-btn:disabled { opacity: 0.3; cursor: default; }
+.page-ellipsis { color: var(--text3); font-family: var(--mono); font-size: 12px; padding: 0 4px; }
+
+/* ── Drug Detail Modal ───────────────────────────────────────────────────── */
+#modal-overlay {
+  position: fixed; inset: 0; z-index: 200;
+  background: rgba(7,9,15,0.85);
+  backdrop-filter: blur(4px);
+  display: none; align-items: center; justify-content: center;
+  padding: 14px;
+}
+#modal-overlay.open { display: flex; }
+
+#modal {
+  width: min(980px, calc(100vw - 28px));
+  max-width: 980px;
+  height: min(86vh, 900px);
+  background: var(--surface);
+  border: 1px solid var(--border2);
+  border-radius: var(--radius2);
+  display: flex; flex-direction: column;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.6);
+  animation: slideIn 0.22s cubic-bezier(0.4,0,0.2,1);
+  overflow: hidden;
+}
+@keyframes slideIn {
+  from { transform: translateY(16px) scale(0.98); opacity: 0; }
+  to   { transform: translateY(0) scale(1); opacity: 1; }
+}
+
+#modal-header {
+  padding: 18px 20px 14px;
+  border-bottom: 1px solid var(--border);
+  flex-shrink: 0;
+}
+.modal-top-row {
+  display: flex; align-items: flex-start; justify-content: space-between; gap: 12px;
+}
+.modal-close {
+  background: none; border: none; color: var(--text3);
+  cursor: pointer; font-size: 22px; line-height: 1; padding: 0;
+  flex-shrink: 0; margin-top: -2px;
+  transition: color 0.12s;
+}
+.modal-close:hover { color: var(--text); }
+.modal-drug-name {
+  font-family: var(--sans); font-weight: 800; font-size: 22px;
+  color: var(--white); line-height: 1.2;
+}
+.modal-generic {
+  font-family: var(--serif); font-style: italic; font-size: 14px;
+  color: var(--text2); margin-top: 2px;
+}
+.modal-meta-row {
+  display: flex; flex-wrap: wrap; gap: 8px; margin-top: 12px; align-items: center;
+}
+.modal-price {
+  font-family: var(--mono); font-size: 20px; font-weight: 500; color: var(--teal);
+  margin-right: 4px;
+}
+
+/* Tab bar */
+#modal-tabs {
+  display: flex; flex-wrap: wrap; gap: 4px;
+  border-bottom: 1px solid var(--border);
+  flex-shrink: 0; padding: 8px 12px;
+}
+#modal-tabs::-webkit-scrollbar { display: none; }
+.tab-btn {
+  padding: 5px 10px;
+  font-family: var(--sans); font-size: 11px; font-weight: 600;
+  letter-spacing: 0.04em; text-transform: uppercase;
+  color: var(--text3); cursor: pointer; white-space: nowrap;
+  border: 1px solid var(--border); border-radius: 4px;
+  background: var(--surface2);
+  transition: all 0.12s; flex-shrink: 0;
+}
+.tab-btn:hover { color: var(--text2); border-color: var(--border2); background: var(--surface3); }
+.tab-btn.active { color: var(--teal); border-color: var(--teal); background: var(--teal-glow); }
+.tab-count {
+  display: inline-flex; align-items: center; justify-content: center;
+  min-width: 16px; height: 16px; padding: 0 4px;
+  background: var(--surface3); border-radius: 8px;
+  font-size: 10px; margin-left: 5px; color: var(--text2);
+}
+.tab-btn.active .tab-count { background: var(--teal-glow); color: var(--teal); }
+
+/* Modal body */
+#modal-body {
+  flex: 1; overflow-y: auto; padding: 20px;
+}
+.tab-panel { display: none; }
+.tab-panel.active { display: block; }
+
+/* Overview panel */
+.overview-grid {
+  display: grid; grid-template-columns: 1fr 1fr; gap: 2px;
+  margin-bottom: 20px;
+}
+.info-cell {
+  background: var(--surface2); padding: 10px 14px;
+}
+.info-cell:first-child { border-radius: 6px 0 0 0; }
+.info-cell:nth-child(2) { border-radius: 0 6px 0 0; }
+.info-cell:nth-last-child(2) { border-radius: 0 0 0 6px; }
+.info-cell:last-child { border-radius: 0 0 6px 0; }
+.info-cell.full { grid-column: 1/-1; }
+.info-label {
+  font-family: var(--mono); font-size: 10px; color: var(--text3);
+  text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 3px;
+}
+.info-value {
+  font-family: var(--mono); font-size: 13px; color: var(--text);
+  word-break: break-word;
+}
+.info-value.highlight { color: var(--teal); }
+.info-value.warn { color: var(--amber); }
+.info-value.danger { color: var(--red); }
+
+/* Sub-table displays */
+.sub-table-list { display: flex; flex-direction: column; gap: 8px; }
+.sub-row {
+  background: var(--surface2); border: 1px solid var(--border);
+  border-radius: var(--radius); padding: 12px 14px;
+}
+.sub-row-title {
+  font-family: var(--sans); font-size: 13px; font-weight: 600;
+  color: var(--white); margin-bottom: 4px;
+}
+.sub-row-detail {
+  font-size: 13px; color: var(--text2); line-height: 1.5;
+  word-break: break-word; overflow-wrap: anywhere;
+}
+.sub-row-meta {
+  font-family: var(--mono); font-size: 10px; color: var(--text3);
+  margin-top: 5px;
+}
+
+/* FDA narrative text — preserves \n line breaks and styles inline section headings */
+.fda-text { font-size: 13px; color: var(--text2); line-height: 1.55; word-break: break-word; overflow-wrap: anywhere; }
+.fda-text p.fda-para { margin: 0 0 8px 0; }
+.fda-text p.fda-para:last-child { margin-bottom: 0; }
+.fda-text .fda-subhead {
+  display: inline-block;
+  font-family: var(--mono); font-size: 10px; color: var(--text3);
+  text-transform: uppercase; letter-spacing: 0.1em;
+  margin-right: 6px; font-weight: 600;
+}
+.fda-text .fda-subhead.block { display: block; margin: 6px 0 2px 0; }
+
+/* FDA Ext. tab — each field as a labelled block, separated by dividers */
+.fda-field { padding: 10px 0; }
+.fda-field + .fda-field { border-top: 1px solid var(--border); }
+.fda-field:first-child { padding-top: 0; }
+.fda-field:last-child { padding-bottom: 0; }
+.fda-field-label {
+  font-family: var(--mono); font-size: 10px; color: var(--text3);
+  text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 6px;
+}
+.fda-field-value { font-size: 13px; color: var(--text); line-height: 1.55; word-break: break-word; overflow-wrap: anywhere; }
+
+/* Severity badges */
+.sev-badge {
+  display: inline-block; font-family: var(--mono); font-size: 10px;
+  padding: 1px 6px; border-radius: 3px; font-weight: 500;
+  text-transform: uppercase; letter-spacing: 0.05em;
+}
+/* interaction/warning severity */
+.sev-major, .sev-severe, .sev-high,
+.sev-black-box-warning,
+.sev-contraindication                 { background: rgba(224,92,92,0.15); color: var(--red); border: 1px solid var(--red-dim); }
+.sev-moderate, .sev-medium,
+.sev-caution                          { background: rgba(240,165,0,0.12); color: var(--amber); border: 1px solid var(--amber-dim); }
+.sev-minor, .sev-low,
+.sev-common                           { background: rgba(0,201,167,0.1); color: var(--teal); border: 1px solid var(--teal-dim); }
+.sev-rare, .sev-postmarking           { background: rgba(79,163,224,0.12); color: var(--blue); border: 1px solid rgba(79,163,224,0.3); }
+/* adverse effect frequency bands (>10%, 1-10%, <1%, etc.) */
+.sev-freq-high                        { background: rgba(224,92,92,0.15); color: var(--red); border: 1px solid var(--red-dim); }
+.sev-freq-mid                         { background: rgba(240,165,0,0.12); color: var(--amber); border: 1px solid var(--amber-dim); }
+.sev-freq-low                         { background: rgba(0,201,167,0.1); color: var(--teal); border: 1px solid var(--teal-dim); }
+.sev-freq-other                       { background: rgba(79,163,224,0.12); color: var(--blue); border: 1px solid rgba(79,163,224,0.3); }
+
+/* Empty sub-table */
+.sub-empty {
+  font-family: var(--mono); font-size: 12px; color: var(--text3);
+  padding: 20px; text-align: center; border: 1px dashed var(--border); border-radius: var(--radius);
+}
+
+/* JSON view */
+.json-view {
+  background: var(--surface2); border: 1px solid var(--border);
+  border-radius: var(--radius); padding: 14px;
+  font-family: var(--mono); font-size: 11px; line-height: 1.6;
+  color: var(--text2); overflow-x: auto; white-space: pre;
+}
+.json-key   { color: var(--blue); }
+.json-str   { color: var(--teal); }
+.json-num   { color: var(--amber); }
+.json-null  { color: var(--text3); }
+.json-bool  { color: var(--red); }
+.json-tools {
+  display: flex; align-items: center; gap: 8px; flex-wrap: wrap;
+  margin-bottom: 10px;
+}
+.json-search {
+  min-width: 220px;
+  flex: 1;
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 8px 10px;
+  font-family: var(--mono);
+  font-size: 12px;
+  color: var(--text);
+  outline: none;
+}
+.json-search:focus {
+  border-color: var(--teal-dim);
+  box-shadow: 0 0 0 3px var(--teal-glow);
+}
+.json-tool-btn {
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  color: var(--text2);
+  font-family: var(--mono);
+  font-size: 12px;
+  padding: 8px 10px;
+  cursor: pointer;
+}
+.json-tool-btn:hover { border-color: var(--teal-dim); color: var(--teal); }
+.json-hit-count {
+  font-family: var(--mono);
+  font-size: 11px;
+  color: var(--text3);
+}
+.json-raw {
+  width: 100%;
+  min-height: 380px;
+  max-height: calc(100vh - 280px);
+  resize: vertical;
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 12px;
+  color: var(--text2);
+  font-family: var(--mono);
+  font-size: 11px;
+  line-height: 1.6;
+  outline: none;
+}
+
+/* URL external link */
+.ext-link {
+  color: var(--teal); text-decoration: none; font-size: 12px;
+  font-family: var(--mono);
+}
+.ext-link:hover { text-decoration: underline; }
+
+/* ── Toast ───────────────────────────────────────────────────────────────── */
+#toast {
+  position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%) translateY(80px);
+  z-index: 999;
+  background: var(--surface3); border: 1px solid var(--border2);
+  border-radius: var(--radius); padding: 10px 20px;
+  font-family: var(--mono); font-size: 13px; color: var(--text);
+  box-shadow: var(--shadow);
+  transition: transform 0.25s cubic-bezier(0.4,0,0.2,1), opacity 0.25s;
+  opacity: 0;
+}
+#toast.show { transform: translateX(-50%) translateY(0); opacity: 1; }
+#toast.error { border-color: var(--red-dim); color: var(--red); }
+
+/* ── Responsive ──────────────────────────────────────────────────────────── */
+@media (max-width: 900px) {
+  #app { grid-template-columns: 1fr; grid-template-areas: "header" "main"; }
+  #sidebar { display: none; }
+  #modal { width: 100vw; height: 100vh; border-radius: 0; margin: 0; }
+  #modal-overlay { padding: 0; }
+}
+</style>
+</head>
+<body>
+
+<div id="app">
+
+  <!-- ── Header ── -->
+  <header id="header">
+    <div class="logo">
+      <div class="logo-mark">Rx</div>
+      Drug Explorer
+    </div>
+    <div class="header-sep"></div>
+    <div class="global-search">
+      <span class="search-icon">⌕</span>
+      <input id="q-input" type="text" placeholder="Search by name, generic, code…" autocomplete="off">
+      <button class="search-clear" id="q-clear">×</button>
+    </div>
+    <div class="header-stats">
+      <div class="stat-chip">Drugs <span id="stat-total">—</span></div>
+      <div class="stat-chip">DB <span id="stat-status">—</span></div>
+    </div>
+  </header>
+
+  <!-- ── Sidebar ── -->
+  <aside id="sidebar">
+    <div class="sidebar-section">
+      <div class="sidebar-label">Source</div>
+      <div class="filter-group">
+        <div class="filter-row">
+          <select class="filter-select" id="f-source">
+            <option value="">All sources</option>
+            <option value="MedScape">MedScape</option>
+            <option value="DMS">DMS</option>
+            <option value="OpenFDA">OpenFDA (FDA)</option>
+          </select>
+        </div>
+      </div>
+    </div>
+
+    <div class="sidebar-section">
+      <div class="sidebar-label">Dosage Form</div>
+      <div class="filter-row">
+        <input class="filter-input" id="f-dosage-form" type="text" placeholder="e.g. TABLET, INJECTION…">
+      </div>
+    </div>
+
+    <div class="sidebar-section">
+      <div class="sidebar-label">Price Range</div>
+      <div class="price-range">
+        <input class="filter-input" id="f-min-price" type="number" placeholder="Min" min="0" step="0.5">
+        <input class="filter-input" id="f-max-price" type="number" placeholder="Max" min="0" step="0.5">
+      </div>
+    </div>
+
+    <div class="sidebar-section">
+      <div class="sidebar-label">Routes (press Enter to add)</div>
+      <div class="tag-input-wrap" id="routes-wrap">
+        <input id="routes-input" type="text" placeholder="ORAL, IV, IM…">
+      </div>
+    </div>
+
+    <div class="sidebar-section">
+      <div class="sidebar-label">Indications (press Enter to add)</div>
+      <div class="tag-input-wrap" id="indications-wrap">
+        <input id="indications-input" type="text" placeholder="PAIN, FEVER…">
+      </div>
+    </div>
+
+    <div class="sidebar-section">
+      <div class="sidebar-label">Sort</div>
+      <div class="sort-row">
+        <select class="filter-select" id="f-sort-by">
+          <option value="drug_id">ID</option>
+          <option value="generic_name">Name</option>
+          <option value="price">Price</option>
+        </select>
+        <button class="sort-dir-btn active" id="f-sort-dir" data-dir="asc">↑ ASC</button>
+      </div>
+    </div>
+
+    <div class="sidebar-actions">
+      <button class="btn btn-ghost" id="btn-clear">Clear</button>
+      <button class="btn btn-primary" id="btn-apply">Apply</button>
+    </div>
+
+  </aside>
+
+  <!-- ── Main ── -->
+  <main id="main">
+    <div id="results-bar">
+      <span class="results-count">Showing <strong id="count-display">-</strong> results</span>
+      <span id="active-filters"></span>
+      <div class="results-per-page">
+        Per page
+        <select id="per-page-select">
+          <option value="20">20</option>
+          <option value="40">40</option>
+          <option value="60">60</option>
+          <option value="100">100</option>
+        </select>
+      </div>
+    </div>
+
+    <div id="drug-grid"></div>
+    <div id="state-area"></div>
+    <div id="pagination"></div>
+  </main>
+
+</div>
+
+<!-- ── Drug Detail Modal ── -->
+<div id="modal-overlay">
+  <div id="modal">
+    <div id="modal-header">
+      <div class="modal-top-row">
+        <div>
+          <div class="modal-drug-name" id="m-name">—</div>
+          <div class="modal-generic" id="m-generic">—</div>
+        </div>
+        <button class="modal-close" id="modal-close-btn">×</button>
+      </div>
+      <div class="modal-meta-row" id="m-meta"></div>
+    </div>
+
+    <div id="modal-tabs"></div>
+    <div id="modal-body">
+      <div class="state-display"><div class="spinner"></div></div>
+    </div>
+  </div>
+</div>
+
+<div id="toast"></div>
+
+<script>
+// ── Config ────────────────────────────────────────────────────────────────
+const API = (window.API_BASE || 'http://localhost:8000');
+
+// ── Helpers ───────────────────────────────────────────────────────────────
+// brand_names arrives as either a JSON array string '["Aspirin","Bayer"]',
+// a plain comma-separated string, or null.
+function parseBrandNames(raw) {
+  if (!raw) return [];
+  try {
+    const parsed = JSON.parse(raw);
+    if (Array.isArray(parsed)) return parsed.filter(Boolean);
+  } catch (_) {}
+  return raw.split(',').map(s => s.trim()).filter(Boolean);
+}
+
+// ── State ─────────────────────────────────────────────────────────────────
+let state = {
+  q: '', source: '', dosageForm: '', minPrice: '', maxPrice: '',
+  routes: [], indications: [],
+  sortBy: 'drug_id', sortOrder: 'asc',
+  page: 1, perPage: 20,
+  total: 0, loading: false,
+};
+
+// ── DOM helpers ──────────────────────────────────────────────────────────
+const $  = (s, ctx = document) => ctx.querySelector(s);
+const $$ = (s, ctx = document) => [...ctx.querySelectorAll(s)];
+
+function toast(msg, type = '') {
+  const el = $('#toast');
+  el.textContent = msg;
+  el.className = 'show' + (type ? ' ' + type : '');
+  clearTimeout(el._t);
+  el._t = setTimeout(() => { el.className = ''; }, 3000);
+}
+
+async function apiFetch(path, options = {}) {
+  try {
+    const res = await fetch(API + path, {
+      headers: { 'Content-Type': 'application/json' },
+      ...options,
+    });
+    if (!res.ok) {
+      const err = await res.json().catch(() => ({ detail: res.statusText }));
+      throw new Error(err.detail || res.statusText);
+    }
+    return res.json();
+  } catch (e) {
+    throw e;
+  }
+}
+
+// ── Tag inputs ────────────────────────────────────────────────────────────
+function makeTagInput(wrapId, inputId, stateKey) {
+  const wrap  = $(`#${wrapId}`);
+  const input = $(`#${inputId}`);
+
+  function renderTags() {
+    $$('.tag', wrap).forEach(t => t.remove());
+    state[stateKey].forEach((val, i) => {
+      const tag = document.createElement('span');
+      tag.className = 'tag';
+      tag.innerHTML = `${val}<span class="tag-remove" data-i="${i}">×</span>`;
+      wrap.insertBefore(tag, input);
+    });
+  }
+
+  wrap.addEventListener('click', () => input.focus());
+  input.addEventListener('keydown', e => {
+    if ((e.key === 'Enter' || e.key === ',') && input.value.trim()) {
+      e.preventDefault();
+      const v = input.value.trim().replace(/,$/, '').toUpperCase();
+      if (v && !state[stateKey].includes(v)) {
+        state[stateKey] = [...state[stateKey], v];
+        renderTags();
+      }
+      input.value = '';
+    } else if (e.key === 'Backspace' && !input.value && state[stateKey].length) {
+      state[stateKey] = state[stateKey].slice(0, -1);
+      renderTags();
+    }
+  });
+  wrap.addEventListener('click', e => {
+    if (e.target.classList.contains('tag-remove')) {
+      const i = +e.target.dataset.i;
+      state[stateKey] = state[stateKey].filter((_, j) => j !== i);
+      renderTags();
+    }
+  });
+  return renderTags;
+}
+
+const renderRouteTags       = makeTagInput('routes-wrap',      'routes-input',      'routes');
+const renderIndicationTags  = makeTagInput('indications-wrap', 'indications-input', 'indications');
+
+// ── Init health + stats ───────────────────────────────────────────────────
+async function initStats() {
+  try {
+    const [health, stats] = await Promise.all([
+      apiFetch('/api/health'),
+      apiFetch('/api/stats'),
+    ]);
+    $('#stat-status').textContent = health.status === 'healthy' ? '●' : '✗';
+    $('#stat-status').style.color = health.status === 'healthy' ? 'var(--teal)' : 'var(--red)';
+    $('#stat-total').textContent = stats.total_drugs?.toLocaleString() ?? '—';
+  } catch (e) {
+    $('#stat-status').textContent = '✗';
+    $('#stat-status').style.color = 'var(--red)';
+    toast('Cannot reach API at ' + API, 'error');
+  }
+}
+
+// ── Search ────────────────────────────────────────────────────────────────
+async function search() {
+  if (state.loading) return;
+  state.loading = true;
+  showLoading();
+
+  // Pagination lives in URL params; all filters go in the POST body.
+  // Browsers block GET requests with a body, so we use POST /api/drugs/search.
+  const params = new URLSearchParams({
+    page:     state.page,
+    per_page: state.perPage,
+  });
+
+  const body = {
+    sort_by:    state.sortBy,
+    sort_order: state.sortOrder,
+  };
+  if (state.q)                  body.q           = state.q;
+  if (state.source)             body.source      = state.source;
+  if (state.dosageForm)         body.dosage_form = state.dosageForm;
+  if (state.minPrice !== '')    body.min_price   = +state.minPrice;
+  if (state.maxPrice !== '')    body.max_price   = +state.maxPrice;
+  if (state.routes.length)      body.routes      = state.routes;
+  if (state.indications.length) body.indications = state.indications;
+
+  try {
+    const data = await apiFetch(`/api/drugs/search?${params}`, {
+      method: 'POST',
+      body:   JSON.stringify(body),
+    });
+    state.total   = data.total;
+    state.loading = false;
+    renderResults(data.results, data.total, data.page, data.per_page);
+  } catch (e) {
+    state.loading = false;
+    showError(e.message);
+    toast(e.message, 'error');
+  }
+}
+
+// ── Render results ────────────────────────────────────────────────────────
+function showLoading() {
+  $('#drug-grid').innerHTML = '';
+  $('#state-area').innerHTML = `
+    <div class="state-display">
+      <div class="spinner"></div>
+      <div class="state-title">Loading</div>
+    </div>`;
+  $('#pagination').innerHTML = '';
+  $('#count-display').textContent = '—';
+}
+
+function showError(msg) {
+  $('#drug-grid').innerHTML = '';
+  $('#state-area').innerHTML = `
+    <div class="state-display">
+      <div class="state-icon">⚠</div>
+      <div class="state-title">Error</div>
+      <div class="state-sub">${msg}</div>
+    </div>`;
+  $('#pagination').innerHTML = '';
+}
+
+function renderResults(drugs, total, page, perPage) {
+  $('#state-area').innerHTML = '';
+  $('#count-display').innerHTML = `<strong>${total.toLocaleString()}</strong>`;
+
+  if (!drugs.length) {
+    $('#drug-grid').innerHTML = '';
+    $('#state-area').innerHTML = `
+      <div class="state-display">
+        <div class="state-icon">⊘</div>
+        <div class="state-title">No results</div>
+        <div class="state-sub">Try adjusting your filters</div>
+      </div>`;
+    $('#pagination').innerHTML = '';
+    return;
+  }
+
+  const grid = $('#drug-grid');
+  grid.innerHTML = '';
+  drugs.forEach((drug, idx) => {
+    const card = document.createElement('div');
+    card.className = 'drug-card';
+    card.style.animationDelay = `${idx * 18}ms`;
+    card.dataset.id = drug.drug_id;
+
+    const src          = (drug.source || '').toLowerCase();
+    const name         = drug.generic_name || '-';
+    const brands       = parseBrandNames(drug.brand_names);
+    const numericPrice = Number(drug.price);
+    const hasPrice     = drug.price !== null && drug.price !== undefined && drug.price !== '' && Number.isFinite(numericPrice);
+    const isFDA        = src === 'openfda' || src === 'fda';
+    const priceLabel   = hasPrice ? `${numericPrice.toFixed(2)} EGP` : (isFDA ? 'FDA record' : 'No price');
+    // Dosage form comes from drug_dosage_forms sub-table (not a flat column)
+    const form         = '';
+    const rx           = drug.rx_status || '';
+
+    card.innerHTML = `
+      <span class="card-source ${src}">${drug.source || 'Unknown'}</span>
+      ${rx ? `<span class="card-badge" style="position:absolute;top:14px;right:14px;font-size:10px">${esc(rx)}</span>` : ''}
+      <div class="card-name">${esc(name)}</div>
+      ${brands.length ? `<div class="card-generic">${esc(brands.slice(0,2).join(', '))}</div>` : ''}
+      <div class="card-meta">
+        ${form ? `<span class="card-badge">${esc(form)}</span>` : ''}
+      </div>
+      <div class="card-price ${hasPrice ? '' : 'no-price'}">${esc(priceLabel)}</div>
+      <div class="card-id">#${drug.drug_id}</div>`;
+    card.addEventListener('click', () => openDrug(drug.drug_id));
+    grid.appendChild(card);
+  });
+
+  renderPagination(total, page, perPage);
+}
+
+function renderPagination(total, page, perPage) {
+  const pages = Math.ceil(total / perPage);
+  if (pages <= 1) { $('#pagination').innerHTML = ''; return; }
+
+  const pag = $('#pagination');
+  pag.innerHTML = '';
+
+  const mkBtn = (label, pg, active = false, disabled = false) => {
+    const b = document.createElement('button');
+    b.className = 'page-btn' + (active ? ' active' : '');
+    b.textContent = label;
+    b.disabled = disabled;
+    if (!disabled && !active) b.addEventListener('click', () => { state.page = pg; search(); });
+    return b;
+  };
+
+  pag.appendChild(mkBtn('←', page - 1, false, page === 1));
+
+  let pageNums = new Set([1, pages]);
+  for (let i = Math.max(1, page - 2); i <= Math.min(pages, page + 2); i++) pageNums.add(i);
+  pageNums = [...pageNums].sort((a, b) => a - b);
+
+  let prev = 0;
+  pageNums.forEach(p => {
+    if (prev && p - prev > 1) {
+      const e = document.createElement('span');
+      e.className = 'page-ellipsis'; e.textContent = '…';
+      pag.appendChild(e);
+    }
+    pag.appendChild(mkBtn(p, p, p === page));
+    prev = p;
+  });
+
+  pag.appendChild(mkBtn('→', page + 1, false, page === pages));
+}
+
+// ── Drug detail modal ─────────────────────────────────────────────────────
+const SUB_TABS = [
+  { key: 'overview',             label: 'Overview',    countable: false },
+  { key: 'version_diff',         label: 'Version Diff',countable: false },
+  { key: 'dosage_forms',         label: 'Forms',       countable: true  },
+  { key: 'dosing',               label: 'Dosing',      countable: true  },
+  { key: 'adverse_effects',      label: 'Adverse',     countable: true  },
+  { key: 'warnings',             label: 'Warnings',    countable: true  },
+  { key: 'interactions',         label: 'Interactions',countable: true  },
+  { key: 'pregnancy',            label: 'Pregnancy',   countable: true  },
+  { key: 'pharmacology',         label: 'Pharmacology',countable: true  },
+  { key: 'administration',       label: 'Admin',       countable: true  },
+  { key: 'suggested_dosing',     label: 'Sug. Dosing', countable: true  },
+  { key: 'suggested_uses',       label: 'Uses',        countable: true  },
+  { key: 'nutrition',            label: 'Nutrition',   countable: true  },
+  { key: 'drug_dms_extensions',  label: 'DMS Ext.',    countable: true  },
+  { key: 'fda_ids',              label: 'FDA IDs',     countable: true  },
+  { key: 'fda_products',         label: 'FDA Products',countable: true  },
+  { key: 'fda_submissions',      label: 'FDA Submits', countable: true  },
+  { key: 'fda_extensions',       label: 'FDA Ext.',    countable: true  },
+  // fda_payload_hashes is debug-only (SHA-256 hex of raw OpenFDA payloads).
+  // Still accessible via the JSON tab; not surfaced as its own tab.
+  { key: 'json',                 label: 'JSON',        countable: false },
+];
+
+let currentDrug = null;
+let firstVersionDrug = null;
+let drugVersionsMeta = [];
+let activeTab   = 'overview';
+
+async function openDrug(id) {
+  currentDrug = null;
+  firstVersionDrug = null;
+  drugVersionsMeta = [];
+  activeTab   = 'overview';
+  $('#modal-overlay').classList.add('open');
+  $('#modal-body').innerHTML = '<div class="state-display"><div class="spinner"></div></div>';
+  $('#modal-tabs').innerHTML = '';
+  $('#m-name').textContent    = 'Loading…';
+  $('#m-generic').textContent = '';
+  $('#m-meta').innerHTML      = '';
+
+  try {
+    const versions = await apiFetch(`/api/drugs/${id}/versions`).catch(() => []);
+    drugVersionsMeta = Array.isArray(versions) ? versions : [];
+
+    let drug = null;
+    if (drugVersionsMeta.length) {
+      const sorted = [...drugVersionsMeta].sort((a, b) => Number(a.version_number || 0) - Number(b.version_number || 0));
+      const currentMeta = sorted.find(v => Number(v.is_current) === 1) || sorted[sorted.length - 1];
+      const currentVersionNumber = Number(currentMeta?.version_number || 0);
+      if (Number.isFinite(currentVersionNumber) && currentVersionNumber > 0) {
+        drug = await apiFetch(`/api/drugs/${id}/versions/${currentVersionNumber}`).catch(() => null);
+      }
+      if (!drug) {
+        drug = await apiFetch(`/api/drugs/${id}`).catch(() => null);
+      }
+
+      const firstVersionNumber = Number(sorted[0]?.version_number || 0);
+      if (Number.isFinite(firstVersionNumber) && firstVersionNumber > 0) {
+        if (Number(drug?.version_number || 0) === firstVersionNumber) {
+          firstVersionDrug = drug;
+        } else {
+          firstVersionDrug = await apiFetch(`/api/drugs/${id}/versions/${firstVersionNumber}`).catch(() => null);
+        }
+      }
+    } else {
+      drug = await apiFetch(`/api/drugs/${id}`);
+      firstVersionDrug = drug;
+    }
+
+    if (!drug) throw new Error(`Drug ${id} not found`);
+    firstVersionDrug = firstVersionDrug || drug;
+    currentDrug = drug;
+    renderModal(drug);
+  } catch (e) {
+    $('#modal-body').innerHTML = `<div class="state-display"><div class="state-icon">⚠</div><div class="state-title">${esc(e.message)}</div></div>`;
+    toast(e.message, 'error');
+  }
+}
+
+function renderModal(drug) {
+  const name   = drug.generic_name || `Drug #${drug.drug_id}`;
+  const brands = parseBrandNames(drug.brand_names);
+
+  // DMS extension fields come from the drug_dms_extensions sub-table row
+  const ext   = (Array.isArray(drug.drug_dms_extensions) && drug.drug_dms_extensions.length)
+    ? drug.drug_dms_extensions[0]
+    : null;
+  const price = ext?.price ?? null;
+
+  // Primary dosage form from the sub-table (first entry, if any)
+  const firstForm = (Array.isArray(drug.dosage_forms) && drug.dosage_forms.length)
+    ? drug.dosage_forms[0].form_name
+    : null;
+
+  $('#m-name').textContent    = name;
+  $('#m-generic').textContent = brands.join(' · ');
+
+  // Meta row
+  const meta = $('#m-meta');
+  meta.innerHTML = '';
+  if (price != null) {
+    const p = document.createElement('span');
+    p.className = 'modal-price';
+    p.textContent = Number(price).toFixed(2) + ' EGP';
+    meta.appendChild(p);
+  }
+  const chips = [
+    drug.rx_status, drug.source, firstForm,
+  ].filter(Boolean);
+  chips.forEach(v => {
+    const b = document.createElement('span');
+    b.className = 'card-badge';
+    b.textContent = v;
+    meta.appendChild(b);
+  });
+  if (drug.url && !drug.url.startsWith('dms://')) {
+    const a = document.createElement('a');
+    a.href = drug.url; a.target = '_blank'; a.className = 'ext-link';
+    a.textContent = ['openfda', 'fda'].includes((drug.source || '').toLowerCase()) ? '↗ FDA' : '↗ MedScape';
+    meta.appendChild(a);
+  }
+
+  // Build tabs — only show tabs with data (except overview + json always shown)
+  const tabs = $('#modal-tabs');
+  tabs.innerHTML = '';
+  const activeTabs = SUB_TABS.filter(t => {
+    if (!t.countable) return true;
+    return (drug[t.key] || []).length > 0;
+  });
+  activeTabs.forEach(t => {
+    const btn = document.createElement('button');
+    btn.className = 'tab-btn' + (t.key === activeTab ? ' active' : '');
+    btn.dataset.tab = t.key;
+    const count = t.countable && drug[t.key] ? drug[t.key].length : null;
+    btn.innerHTML = t.label + (count ? `<span class="tab-count">${count}</span>` : '');
+    btn.addEventListener('click', () => {
+      activeTab = t.key;
+      $$('.tab-btn', tabs).forEach(b => b.classList.toggle('active', b === btn));
+      renderTab(drug, t.key);
+    });
+    tabs.appendChild(btn);
+  });
+
+  renderTab(drug, activeTab);
+}
+
+function renderTab(drug, tab) {
+  const body = $('#modal-body');
+
+  if (tab === 'overview') {
+    body.innerHTML = renderOverview(drug);
+    return;
+  }
+  if (tab === 'version_diff') {
+    body.innerHTML = renderVersionDiff(drug, firstVersionDrug, drugVersionsMeta);
+    return;
+  }
+  if (tab === 'json') {
+    const rawJson = JSON.stringify(drug, null, 2);
+    body.innerHTML = `
+      <div class="json-tools">
+        <input id="json-search-input" class="json-search" type="text" placeholder="Search JSON (Enter = next match)" autocomplete="off">
+        <span id="json-hit-count" class="json-hit-count">0 matches</span>
+        <button id="json-next-btn" class="json-tool-btn" type="button">Next</button>
+        <button id="json-copy-btn" class="json-tool-btn" type="button">Copy JSON</button>
+      </div>
+      <textarea id="json-raw" class="json-raw" readonly spellcheck="false">${esc(rawJson)}</textarea>
+    `;
+    initJsonTools(rawJson);
+    return;
+  }
+
+  const rows = drug[tab] || [];
+  if (!rows.length) {
+    body.innerHTML = `<div class="sub-empty">No data for this drug</div>`;
+    return;
+  }
+
+  body.innerHTML = `<div class="sub-table-list">${rows.map(r => renderSubRow(tab, r)).join('')}</div>`;
+}
+
+function initJsonTools(rawJson) {
+  const input    = $('#json-search-input');
+  const hitCount = $('#json-hit-count');
+  const nextBtn  = $('#json-next-btn');
+  const copyBtn  = $('#json-copy-btn');
+  const ta       = $('#json-raw');
+  if (!input || !hitCount || !nextBtn || !copyBtn || !ta) return;
+
+  let matches = [];
+  let activeIndex = -1;
+
+  function selectMatch(i) {
+    if (!matches.length) return;
+    const q = input.value;
+    if (!q) return;
+    const start = matches[i];
+    const end = start + q.length;
+    ta.focus();
+    ta.setSelectionRange(start, end);
+  }
+
+  function recomputeMatches() {
+    const q = input.value;
+    matches = [];
+    activeIndex = -1;
+
+    if (!q) {
+      hitCount.textContent = '0 matches';
+      ta.setSelectionRange(0, 0);
+      return;
+    }
+
+    const hay = rawJson.toLowerCase();
+    const needle = q.toLowerCase();
+    let from = 0;
+    while (from < hay.length) {
+      const idx = hay.indexOf(needle, from);
+      if (idx === -1) break;
+      matches.push(idx);
+      from = idx + Math.max(needle.length, 1);
+    }
+
+    hitCount.textContent = `${matches.length} match${matches.length === 1 ? '' : 'es'}`;
+    if (matches.length) {
+      activeIndex = 0;
+      selectMatch(activeIndex);
+    }
+  }
+
+  function nextMatch() {
+    if (!matches.length) return;
+    activeIndex = (activeIndex + 1) % matches.length;
+    selectMatch(activeIndex);
+  }
+
+  input.addEventListener('input', recomputeMatches);
+  input.addEventListener('keydown', e => {
+    if (e.key === 'Enter') {
+      e.preventDefault();
+      nextMatch();
+    }
+  });
+  nextBtn.addEventListener('click', nextMatch);
+  copyBtn.addEventListener('click', async () => {
+    try {
+      if (navigator.clipboard?.writeText) {
+        await navigator.clipboard.writeText(rawJson);
+      } else {
+        ta.focus();
+        ta.select();
+        if (!document.execCommand('copy')) throw new Error('Copy command failed');
+      }
+      toast('JSON copied');
+    } catch (_) {
+      toast('Failed to copy JSON', 'error');
+    } finally {
+      ta.setSelectionRange(0, 0);
+    }
+  });
+}
+
+function stableSerialize(value) {
+  if (value === null || typeof value !== 'object') return JSON.stringify(value);
+  if (Array.isArray(value)) return `[${value.map(stableSerialize).join(',')}]`;
+  const keys = Object.keys(value).sort();
+  return `{${keys.map(k => `${JSON.stringify(k)}:${stableSerialize(value[k])}`).join(',')}}`;
+}
+
+function flattenForDiff(value, path = '$', out = new Map()) {
+  if (value === null || typeof value !== 'object') {
+    out.set(path, stableSerialize(value));
+    return out;
+  }
+  if (Array.isArray(value)) {
+    if (!value.length) {
+      out.set(path, '[]');
+      return out;
+    }
+    value.forEach((item, idx) => flattenForDiff(item, `${path}[${idx}]`, out));
+    return out;
+  }
+  const keys = Object.keys(value).sort();
+  if (!keys.length) {
+    out.set(path, '{}');
+    return out;
+  }
+  keys.forEach(key => flattenForDiff(value[key], `${path}.${key}`, out));
+  return out;
+}
+
+function shortDiffValue(s) {
+  const str = String(s ?? '');
+  const unquoted = (str.startsWith('"') && str.endsWith('"')) ? str.slice(1, -1) : str;
+  return unquoted.length > 220 ? `${unquoted.slice(0, 220)}...` : unquoted;
+}
+
+function renderVersionDiff(current, first, versionsMeta) {
+  if (!current || !first) {
+    return `<div class="sub-empty">Version diff unavailable for this drug</div>`;
+  }
+
+  const currentVersion = Number(current.version_number || 0);
+  const firstVersion = Number(first.version_number || 0);
+  if (currentVersion === firstVersion) {
+    return `<div class="sub-empty">No previous version to compare. Current is version ${current.version_number || 1}.</div>`;
+  }
+
+  const currMap = flattenForDiff(current);
+  const firstMap = flattenForDiff(first);
+  const allKeys = new Set([...currMap.keys(), ...firstMap.keys()]);
+  const rows = [];
+  let added = 0, removed = 0, changed = 0;
+
+  [...allKeys].sort().forEach(path => {
+    const a = firstMap.get(path);
+    const b = currMap.get(path);
+    if (a === undefined && b !== undefined) {
+      added += 1;
+      rows.push({ type: 'added', path, from: '', to: shortDiffValue(b) });
+      return;
+    }
+    if (a !== undefined && b === undefined) {
+      removed += 1;
+      rows.push({ type: 'removed', path, from: shortDiffValue(a), to: '' });
+      return;
+    }
+    if (a !== b) {
+      changed += 1;
+      rows.push({ type: 'changed', path, from: shortDiffValue(a), to: shortDiffValue(b) });
+    }
+  });
+
+  const metaLabel = Array.isArray(versionsMeta) && versionsMeta.length
+    ? `${versionsMeta.length} total versions`
+    : 'version history available';
+
+  const summary = `
+    <div class="sub-row" style="margin-bottom:8px">
+      <div class="sub-row-title">Version ${firstVersion} → Version ${currentVersion}</div>
+      <div class="sub-row-meta">${esc(metaLabel)}</div>
+      <div class="sub-row-detail">Changed: ${changed} · Added: ${added} · Removed: ${removed}</div>
+    </div>`;
+
+  if (!rows.length) {
+    return `${summary}<div class="sub-empty">No JSON-level differences found</div>`;
+  }
+
+  const rendered = rows.map(r => `
+    <div class="sub-row">
+      <div class="sub-row-title">${esc(r.path)} <span class="card-badge">${esc(r.type.toUpperCase())}</span></div>
+      ${r.from ? `<div class="sub-row-meta">First: ${esc(r.from)}</div>` : ''}
+      ${r.to ? `<div class="sub-row-detail">Current: ${esc(r.to)}</div>` : ''}
+    </div>
+  `).join('');
+  return `${summary}<div class="sub-table-list">${rendered}</div>`;
+}
+
+function renderOverview(drug) {
+  const brands = parseBrandNames(drug.brand_names);
+
+  // DMS extension fields from the drug_dms_extensions sub-table row
+  const ext = (Array.isArray(drug.drug_dms_extensions) && drug.drug_dms_extensions.length)
+    ? drug.drug_dms_extensions[0]
+    : null;
+
+  const price       = ext?.price             ?? null;
+  const ham         = ext?.ham               ?? null;
+  const arabicName  = ext?.arabic_trade_name ?? null;
+  const notes       = ext?.notes             ?? null;
+  const routeRaw    = ext?.route             ?? null;
+  const arabicRoute = ext?.arabic_route      ?? null;
+
+  // Safe JSON parse for route arrays stored as JSON strings
+  function tryParseArr(v) {
+    if (!v) return null;
+    try {
+      const p = JSON.parse(v);
+      return Array.isArray(p) ? p.join(', ') : String(p);
+    } catch (_) { return String(v); }
+  }
+
+  // Primary dosage form from sub-table
+  const firstForm = (Array.isArray(drug.dosage_forms) && drug.dosage_forms.length)
+    ? drug.dosage_forms[0].form_name
+    : null;
+  const fdaExt = (Array.isArray(drug.fda_extensions) && drug.fda_extensions.length)
+    ? drug.fda_extensions[0]
+    : null;
+
+  const fields = [
+    ['Drug ID',        drug.drug_id,         ''],
+    ['Version ID',     drug.version_id,       ''],
+    ['Version',        drug.version_number,   ''],
+    ['Name',           drug.generic_name,     ''],
+    ['Brand Names',    brands.join(', ') || null, ''],
+    ['Rx Status',      drug.rx_status,        drug.rx_status === 'Rx' ? 'highlight' : ''],
+    ['Source',         drug.source,           'highlight'],
+    ['FDA IDs',        Array.isArray(drug.fda_ids) ? `${drug.fda_ids.length}` : null, ''],
+    ['FDA Products',   Array.isArray(drug.fda_products) ? `${drug.fda_products.length}` : null, ''],
+    ['FDA Submissions',Array.isArray(drug.fda_submissions) ? `${drug.fda_submissions.length}` : null, ''],
+    // FDA regulatory metadata at-a-glance. Content fields (Active/Inactive
+    // Ingredient, Dosage/Strength) live in the "FDA Ext." tab to avoid
+    // duplication and to give long text room to breathe.
+    ['Marketing Category', fdaExt?.marketing_category ?? null, ''],
+    ['Marketing Status',   fdaExt?.marketing_status ?? null, ''],
+    ['Manufacturer',       fdaExt?.manufacturer_name ?? null, ''],
+    ['Review Priority',    fdaExt?.review_priority ?? null, ''],
+    ['Price',          price != null ? Number(price).toFixed(2) + ' EGP' : null, 'highlight'],
+    ['Dosage Form',    firstForm,             ''],
+    // DMS-specific fields (resolved from drug_dms_extensions)
+    ['Arabic Name',    arabicName,            ''],
+    ['Route',          tryParseArr(routeRaw), ''],
+    ['Arabic Route',   tryParseArr(arabicRoute), ''],
+    ['HAM',            ham != null ? (ham ? 'Yes' : 'No') : null, ham ? 'warn' : ''],
+    ['Notes',          notes,                 ''],
+    // Metadata
+    ['Updated',        drug.updated_at,       ''],
+    ['Is Current',     drug.is_current != null ? (drug.is_current ? 'Yes' : 'No') : null, ''],
+  ].filter(([,v]) => v != null && v !== '');
+
+  const FULL_LABELS = new Set([
+    'Brand Names', 'Notes', 'Arabic Name', 'Route', 'Arabic Route',
+    'Manufacturer'
+  ]);
+
+  const cells = fields.map(([label, val, cls]) => {
+    const full = FULL_LABELS.has(label) ? 'full' : '';
+    const dir  = (label === 'Arabic Name' || label === 'Arabic Route') ? ' style="font-size:15px;direction:rtl"' : '';
+    return `<div class="info-cell ${full}">
+      <div class="info-label">${esc(label)}</div>
+      <div class="info-value ${cls}"${dir}>${esc(String(val))}</div>
+    </div>`;
+  }).join('');
+
+  return `<div class="overview-grid">${cells}</div>`;
+}
+
+// Map raw snake_case / abbreviated topic keys to readable labels
+function humanLabel(raw) {
+  if (!raw) return '';
+  const MAP = {
+    allergic_rhinitis: 'Allergic Rhinitis', dosing_considerations: 'Dosing Considerations',
+    general: 'General', mechanism_of_action: 'Mechanism of Action',
+    sl_administration: 'Sublingual Administration', storage: 'Storage',
+    dosing: 'Dosing', common_cold: 'Common Cold', pregnancy: 'Pregnancy',
+    lactation: 'Lactation', animal_studies: 'Animal Studies',
+    pharmacokinetics: 'Pharmacokinetics', absorption: 'Absorption',
+    distribution: 'Distribution', metabolism: 'Metabolism', excretion: 'Excretion',
+    oral_administration: 'Oral Administration', iv_administration: 'IV Administration',
+    im_administration: 'IM Administration', renal_impairment: 'Renal Impairment',
+    hepatic_impairment: 'Hepatic Impairment', pediatric: 'Pediatric',
+    geriatric: 'Geriatric', adult: 'Adult', default: 'General',
+  };
+  const key = raw.toLowerCase().replace(/[ -]/g,'_');
+  return MAP[key] || raw.replace(/_/g,' ').replace(/\b\w/g, c => c.toUpperCase());
+}
+
+// Map severity_band strings to CSS class suffixes
+function sevClass(band) {
+  if (!band) return '';
+  const b = band.toLowerCase();
+  // Interaction / warning types
+  if (b.includes('black box') || b === 'contraindication') return 'sev-black-box-warning';
+  if (b === 'caution') return 'sev-caution';
+  if (b.includes('major') || b.includes('severe') || b.includes('high')) return 'sev-major';
+  if (b.includes('moderate') || b.includes('medium')) return 'sev-moderate';
+  if (b.includes('minor') || b.includes('low')) return 'sev-minor';
+  if (b.includes('postmark') || b.includes('post-mark')) return 'sev-postmarking';
+  if (b.includes('rare')) return 'sev-rare';
+  if (b.includes('common')) return 'sev-common';
+  // Frequency bands like >10%, 1-10%, <1%
+  if (b.startsWith('>10') || b.startsWith('≥10')) return 'sev-freq-high';
+  if (b.includes('1-10') || b.includes('1–10')) return 'sev-freq-mid';
+  if (b.startsWith('<1') || b.startsWith('≤1')) return 'sev-freq-low';
+  if (b.includes('frequency not defined') || b.includes('not defined')) return 'sev-freq-other';
+  return 'sev-freq-other';
+}
+
+function renderSubRow(tab, r) {
+  const s = tab;
+  if (s === 'fda_ids') {
+    const primary = Number(r.is_primary) === 1 ? '<span class="card-badge">PRIMARY</span>' : '';
+    return `<div class="sub-row">
+      <div class="sub-row-title">
+        ${esc(r.id_type || 'id')} ${primary}
+      </div>
+      <div class="sub-row-detail">${esc(r.id_value || '')}</div>
+      <div class="sub-row-meta">${esc(r.source_endpoint || '')}${r.fetched_at ? ` · fetched ${esc(r.fetched_at)}` : ''}</div>
+    </div>`;
+  }
+  if (s === 'fda_products') {
+    return `<div class="sub-row">
+      <div class="sub-row-title">${esc(r.product_ndc || 'NDC')}</div>
+      ${r.application_number ? `<div class="sub-row-detail">Application: ${esc(r.application_number)}</div>` : ''}
+    </div>`;
+  }
+  if (s === 'fda_submissions') {
+    let docs = [];
+    if (Array.isArray(r.application_docs_json)) {
+      docs = r.application_docs_json;
+    } else if (r.application_docs_json && typeof r.application_docs_json === 'string') {
+      try {
+        const parsed = JSON.parse(r.application_docs_json);
+        docs = Array.isArray(parsed) ? parsed : (parsed ? [parsed] : []);
+      } catch (_) {}
+    } else if (r.application_docs_json && typeof r.application_docs_json === 'object') {
+      docs = [r.application_docs_json];
+    }
+    const docsHtml = docs.length
+      ? `<div class="sub-row-meta">Docs: ${docs.slice(0, 3).map(d => {
+          const label = [d.type, d.date].filter(Boolean).join(' · ') || 'Document';
+          if (!d.url) return esc(label);
+          return `<a class="ext-link" href="${esc(d.url)}" target="_blank">${esc(label)}</a>`;
+        }).join(' | ')}${docs.length > 3 ? ` (+${docs.length - 3} more)` : ''}</div>`
+      : '';
+    return `<div class="sub-row">
+      <div class="sub-row-title">
+        ${esc(r.application_number || 'Application')}
+        ${r.submission_type ? `<span class="card-badge">${esc(r.submission_type)}</span>` : ''}
+        ${r.submission_number ? `<span class="card-badge">#${esc(r.submission_number)}</span>` : ''}
+      </div>
+      <div class="sub-row-detail">
+        ${r.submission_status ? `Status: ${esc(r.submission_status)}` : 'Status: n/a'}
+        ${r.submission_status_date ? ` · Date: ${esc(r.submission_status_date)}` : ''}
+      </div>
+      ${docsHtml}
+    </div>`;
+  }
+  if (s === 'fda_extensions') {
+    // Content fields first, regulatory metadata after. Long values use
+    // renderFdaText to preserve line breaks and style inline subtitles.
+    const LONG = new Set(['Active Ingredient', 'Inactive Ingredient', 'Dosage / Strength']);
+    const rows = [
+      ['Active Ingredient',    r.active_ingredient],
+      ['Inactive Ingredient',  r.inactive_ingredient],
+      ['Dosage / Strength',    r.dosage_forms_and_strengths],
+      ['Manufacturer',         r.manufacturer_name],
+      ['Marketing Category',   r.marketing_category],
+      ['Marketing Status',     r.marketing_status],
+      ['Review Priority',      r.review_priority],
+    ].filter(([, v]) => v != null && v !== '');
+    if (!rows.length) return '';
+    return `<div class="sub-row">
+      ${rows.map(([k, v]) => `
+        <div class="fda-field">
+          <div class="fda-field-label">${esc(k)}</div>
+          <div class="fda-field-value">${
+            LONG.has(k) ? renderFdaText(v) : esc(v)
+          }</div>
+        </div>`).join('')}
+    </div>`;
+  }
+  if (s === 'fda_payload_hashes') {
+    return `<div class="sub-row">
+      <div class="sub-row-title">${esc(r.endpoint || 'endpoint')}</div>
+      <div class="sub-row-detail"><code>${esc(r.payload_hash || '')}</code></div>
+    </div>`;
+  }
+  if (s === 'interactions') {
+    const sc = sevClass(r.severity_level);
+    return `<div class="sub-row">
+      <div class="sub-row-title">
+        <span class="sev-badge ${sc}">${esc(r.severity_level || '?')}</span>
+        &nbsp;${esc(r.interacting_drug || '')}
+      </div>
+      <div class="sub-row-detail">${esc(r.description || '')}</div>
+    </div>`;
+  }
+  if (s === 'adverse_effects') {
+    const sc  = sevClass(r.severity_band);
+    const sys = r.body_system && r.body_system !== 'general' ? ` · ${esc(r.body_system)}` : '';
+    return `<div class="sub-row">
+      <div class="sub-row-title">
+        <span class="sev-badge ${sc}">${esc(r.severity_band || '?')}</span>${sys}
+        ${r.list_header ? ` — ${esc(r.list_header)}` : ''}
+      </div>
+      <div class="sub-row-detail fda-text">${renderFdaText(r.effect_text || '')}</div>
+    </div>`;
+  }
+  if (s === 'warnings') {
+    const sc = sevClass(r.warning_type);
+    return `<div class="sub-row">
+      <div class="sub-row-title">
+        <span class="sev-badge ${sc}">${esc(r.warning_type || '')}</span>
+        ${r.sub_warning_type ? ` › ${esc(r.sub_warning_type)}` : ''}
+      </div>
+      ${r.list_header ? `<div class="sub-row-meta">${esc(r.list_header)}</div>` : ''}
+      <div class="sub-row-detail fda-text">${renderFdaText(r.text || '')}</div>
+    </div>`;
+  }
+  if (s === 'dosage_forms') {
+    const pop = humanLabel(r.population);
+    return `<div class="sub-row">
+      <div class="sub-row-title">
+        ${esc(r.form_name || '')}
+        <span class="card-badge">${esc(pop)}</span>
+      </div>
+      ${r.strength_text ? `<div class="sub-row-detail">${esc(r.strength_text)}</div>` : ''}
+    </div>`;
+  }
+  if (s === 'dosing' || s === 'suggested_dosing') {
+    const ind = humanLabel(r.indication);
+    const sub = r.sub_indication ? ` › ${esc(humanLabel(r.sub_indication))}` : '';
+    const pop = humanLabel(r.population);
+    // Skip blank notes_text rows (e.g. DMS indication-only rows)
+    if (!r.notes_text || !r.notes_text.trim()) return '';
+    return `<div class="sub-row">
+      <div class="sub-row-title">
+        ${esc(ind)}${sub}
+        <span class="card-badge">${esc(pop)}</span>
+      </div>
+      ${r.list_header ? `<div class="sub-row-meta">${esc(r.list_header)}</div>` : ''}
+      <div class="sub-row-detail fda-text">${renderFdaText(r.notes_text)}</div>
+    </div>`;
+  }
+  if (s === 'drug_dms_extensions') {
+    function fmtArr(v) {
+      if (!v) return null;
+      try { const p = JSON.parse(v); return Array.isArray(p) ? p.join(', ') : String(p); }
+      catch (_) { return String(v); }
+    }
+    const rows = [
+      ['Price',         r.price != null ? Number(r.price).toFixed(2) + ' EGP' : null],
+      ['HAM',           r.ham   != null ? (r.ham ? 'Yes' : 'No') : null],
+      ['Arabic Name',   r.arabic_trade_name],
+      ['Route',         fmtArr(r.route)],
+      ['Arabic Route',  fmtArr(r.arabic_route)],
+      ['Notes',         r.notes],
+    ].filter(([, v]) => v != null && v !== '');
+    return `<div class="sub-row">
+      ${rows.map(([k, v]) => `
+        <div style="display:flex;gap:10px;margin-bottom:4px">
+          <span class="sub-row-meta" style="min-width:90px;margin-top:0">${esc(k)}</span>
+          <span class="sub-row-detail">${esc(v)}</span>
+        </div>`).join('')}
+    </div>`;
+  }
+  // Generic: pregnancy, pharmacology, administration, suggested_uses, nutrition
+  const rawTopic = r.topic || r.indication || '';
+  const rawSub   = r.sub_topic || r.sub_indication || '';
+  const text     = r.text || r.notes_text || '';
+  if (!text && !rawTopic) return '';
+  return `<div class="sub-row">
+    <div class="sub-row-title">
+      ${esc(humanLabel(rawTopic))}${rawSub ? ` › ${esc(humanLabel(rawSub))}` : ''}
+    </div>
+    ${r.list_header ? `<div class="sub-row-meta">${esc(r.list_header)}</div>` : ''}
+    ${text ? `<div class="sub-row-detail fda-text">${renderFdaText(text)}</div>` : ''}
+  </div>`;
+}
+
+// ── JSON syntax highlight ─────────────────────────────────────────────────
+function syntaxHighlight(json) {
+  return json
+    .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
+    .replace(
+      /("(\\u[a-zA-Z0-9]{4}|\\[^u]|[^\\"])*"(\s*:)?|\b(true|false|null)\b|-?\d+(?:\.\d*)?(?:[eE][+\-]?\d+)?)/g,
+      match => {
+        let cls = 'json-num';
+        if (/^"/.test(match)) { cls = /:$/.test(match) ? 'json-key' : 'json-str'; }
+        else if (/true|false/.test(match)) cls = 'json-bool';
+        else if (/null/.test(match)) cls = 'json-null';
+        return `<span class="${cls}">${match}</span>`;
+      }
+    );
+}
+
+function esc(str) {
+  return String(str ?? '')
+    .replace(/&/g,'&amp;')
+    .replace(/</g,'&lt;')
+    .replace(/>/g,'&gt;')
+    .replace(/"/g,'&quot;');
+}
+
+// ── FDA narrative text formatter ──────────────────────────────────────────
+// Preserves \n line breaks and promotes recognized FDA section headings
+// ("Active ingredient:", "Purpose:", "Warnings:", ...) plus ALL-CAPS prefixes
+// (with or without ':') to a styled subhead. Input is plain text; output is
+// safe HTML.
+
+// Pre-splitter for long Rx SPL label blobs that arrive as a single paragraph.
+// Pass 1 inserts newlines around known ALL-CAPS section markers.
+// Pass 2 breaks at sentence boundaries (". Capital") with abbreviation safety.
+const _SPL_CAPS_SECT_RE = new RegExp(
+  '(?<![\\n])' +
+  '(BOXED\\s+WARNINGS?|WARNINGS?\\s+AND\\s+PRECAUTIONS?|WARNINGS?|PRECAUTIONS?' +
+  '|CONTRAINDICATIONS?|OVERDOSAGE|ADVERSE\\s+REACTIONS?|DRUG\\s+INTERACTIONS?' +
+  '|CLINICAL\\s+PHARMACOLOGY|DOSAGE\\s+AND\\s+ADMINISTRATION' +
+  '|INDICATIONS?\\s+AND\\s+USAGE|HOW\\s+SUPPLIED' +
+  '|MECHANISM\\s+OF\\s+ACTION|PHARMACOKINETICS' +
+  '|NONCLINICAL\\s+TOXICOLOGY|USE\\s+IN\\s+SPECIFIC\\s+POPULATIONS?' +
+  '|PATIENT\\s+COUNSELING)' +
+  '(?=\\s|$)',
+  'g'
+);
+// Abbreviations after which a ". Capital" does NOT indicate a sentence end.
+const _SPL_ABBR_RE = /^(?:approx|incl|resp|vs|al|e\.g|i\.e|i\.v|p\.o|b\.i\.d|t\.i\.d|q\.i\.d|q\.d|p\.r\.n|q\.h|i\.m|mg|mL|mcg|kg|mmol|mEq|IU|hr|min|sec|mo|yr|wk|Dr|Jr|Sr|Mr|Mrs|Ms|No|Vol|Fig|Ref|Eq|cf)$/i;
+
+function _presplitFdaBlob(text) {
+  // Only process long text that is essentially a single paragraph.
+  if (text.length < 500) return text;
+  if ((text.match(/\n/g) || []).length > 5) return text; // already structured
+
+  // Pass 1: insert \n before and after known ALL-CAPS section titles.
+  text = text.replace(_SPL_CAPS_SECT_RE, '\n$1\n')
+             .replace(/^\n+/, '')
+             .replace(/\n{3,}/g, '\n\n');
+
+  // Pass 2: break at ". Capital" sentence boundaries, skipping abbreviations.
+  text = text.replace(/([.!?])\s+([A-Z])/g, function(match, punct, cap, offset, str) {
+    const preceding = str.slice(0, offset + 1); // up to and including punct char
+    const wm = preceding.match(/\b(\w+)\.$/);
+    if (wm) {
+      const w = wm[1];
+      if (w.length <= 1) return match;        // single letter (i. ii. A. B.)
+      if (/^\d+$/.test(w)) return match;      // number (1. 2. 10.)
+      if (_SPL_ABBR_RE.test(w)) return match; // known medical/Latin abbreviation
+    }
+    return punct + '\n' + cap;
+  });
+
+  return text.replace(/\n{3,}/g, '\n\n');
+}
+
+const FDA_HEADINGS = [
+  'Active ingredient', 'Active ingredients',
+  'Inactive ingredient', 'Inactive ingredients',
+  'Purpose', 'Purposes',
+  'Use', 'Uses',
+  'Warning', 'Warnings',
+  'Directions', 'Direction',
+  'Other information', 'Other safety information',
+  'Questions', 'Questions or comments',
+  'Stop use', 'Stop use and ask a doctor',
+  'Do not use',
+  'Ask a doctor', 'Ask a doctor or pharmacist',
+  'Keep out of reach of children',
+  'When using this product',
+  'Pregnancy', 'Pregnancy or breast-feeding',
+  'Dosage', 'Dosage and administration',
+  'Storage', 'Storage and handling',
+  'Indications', 'Indications and usage',
+  'Contraindications',
+  'Mechanism of action',
+  'Pharmacokinetics', 'Pharmacology', 'Clinical pharmacology',
+  'Adverse reactions', 'Adverse effects',
+  'Precautions', 'General precautions',
+  'Boxed warning', 'Black box warning',
+  'Drug interactions',
+  'Overdosage', 'Overdose',
+  'How supplied',
+  'Description',
+];
+// Build a case-insensitive regex matching any heading followed by ':' at the
+// start of a line. Headings sorted longest-first to avoid prefix collisions.
+const FDA_HEADING_RE = (() => {
+  const escaped = FDA_HEADINGS
+    .slice()
+    .sort((a, b) => b.length - a.length)
+    .map(h => h.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'));
+  return new RegExp('^(' + escaped.join('|') + ')\\s*:\\s*', 'i');
+})();
+// Fallback: ALL-CAPS (>=3 alpha chars, may include spaces/&/and), ending in ':'.
+const FDA_CAPS_RE = /^([A-Z][A-Z &/-]{2,60})\s*:\s*/;
+// Standalone ALL-CAPS line (no colon) — Rx SPL section header pre-split by
+// _presplitFdaBlob, e.g. "WARNINGS", "PRECAUTIONS", "CONTRAINDICATIONS".
+const FDA_ALLCAPS_SOLO_RE = /^([A-Z][A-Z\s&/-]{4,69})$/;
+
+function renderFdaText(text) {
+  if (text == null) return '';
+  const raw = String(text);
+  if (!raw.trim()) return '';
+  // Pre-process: split long Rx label blobs at section/sentence boundaries.
+  const processed = _presplitFdaBlob(raw);
+  // Normalize line endings; split.
+  const lines = processed.replace(/\r\n?/g, '\n').split('\n');
+  const parts = [];      // accumulates HTML fragments
+  let paraBuf = [];      // pending non-heading lines for the current <p>
+
+  function flushPara() {
+    if (!paraBuf.length) return;
+    parts.push('<p class="fda-para">' + paraBuf.join('<br>') + '</p>');
+    paraBuf = [];
+  }
+
+  for (const lineRaw of lines) {
+    const line = lineRaw.trim();
+    if (!line) { flushPara(); continue; }
+    const m = line.match(FDA_HEADING_RE) || line.match(FDA_CAPS_RE) || line.match(FDA_ALLCAPS_SOLO_RE);
+    if (m) {
+      const heading = m[1];
+      const rest = line.slice(m[0].length).trim();
+      flushPara();
+      if (rest) {
+        // Inline heading: "Purpose: Pain reliever"
+        parts.push(
+          '<p class="fda-para"><span class="fda-subhead">' +
+          esc(heading) + ':</span> ' + esc(rest) + '</p>'
+        );
+      } else {
+        // Standalone heading on its own line.
+        // Omit the ':' suffix for bare ALL-CAPS section titles (no colon in source).
+        const hadColon = m[0].trimEnd().endsWith(':');
+        parts.push(
+          '<span class="fda-subhead block">' + esc(heading) + (hadColon ? ':' : '') + '</span>'
+        );
+      }
+      continue;
+    }
+    paraBuf.push(esc(line));
+  }
+  flushPara();
+  return parts.join('');
+}
+
+// ── Event wiring ──────────────────────────────────────────────────────────
+let searchTimeout;
+
+function debounceSearch(immediate = false) {
+  clearTimeout(searchTimeout);
+  if (immediate) { state.page = 1; search(); return; }
+  searchTimeout = setTimeout(() => { state.page = 1; search(); }, 380);
+}
+
+$('#q-input').addEventListener('input', e => {
+  state.q = e.target.value;
+  $('#q-clear').style.display = state.q ? 'block' : 'none';
+  debounceSearch();
+});
+$('#q-clear').addEventListener('click', () => {
+  state.q = '';
+  $('#q-input').value = '';
+  $('#q-clear').style.display = 'none';
+  debounceSearch(true);
+});
+
+$('#btn-apply').addEventListener('click', () => {
+  state.source      = $('#f-source').value;
+  state.dosageForm  = $('#f-dosage-form').value.trim().toUpperCase();
+  state.minPrice    = $('#f-min-price').value;
+  state.maxPrice    = $('#f-max-price').value;
+  state.sortBy      = $('#f-sort-by').value;
+  debounceSearch(true);
+});
+
+$('#btn-clear').addEventListener('click', () => {
+  state.source = ''; state.dosageForm = '';
+  state.minPrice = ''; state.maxPrice = '';
+  state.routes = []; state.indications = [];
+  state.q = ''; state.page = 1;
+  $('#f-source').value = '';
+  $('#f-dosage-form').value = '';
+  $('#f-min-price').value = '';
+  $('#f-max-price').value = '';
+  $('#q-input').value = '';
+  $('#q-clear').style.display = 'none';
+  renderRouteTags(); renderIndicationTags();
+  debounceSearch(true);
+});
+
+$('#f-sort-dir').addEventListener('click', function() {
+  state.sortOrder = state.sortOrder === 'asc' ? 'desc' : 'asc';
+  this.textContent = state.sortOrder === 'asc' ? '↑ ASC' : '↓ DESC';
+});
+
+$('#per-page-select').addEventListener('change', e => {
+  state.perPage = +e.target.value;
+  state.page    = 1;
+  search();
+});
+
+// Enter in filter inputs triggers search
+['f-dosage-form','f-min-price','f-max-price'].forEach(id => {
+  $(`#${id}`).addEventListener('keydown', e => { if (e.key === 'Enter') $('#btn-apply').click(); });
+});
+
+// Modal close
+$('#modal-close-btn').addEventListener('click', closeModal);
+$('#modal-overlay').addEventListener('click', e => { if (e.target === $('#modal-overlay')) closeModal(); });
+document.addEventListener('keydown', e => { if (e.key === 'Escape') closeModal(); });
+
+function closeModal() {
+  $('#modal-overlay').classList.remove('open');
+  currentDrug = null;
+}
+
+// ── Boot ──────────────────────────────────────────────────────────────────
+initStats();
+search();
+</script>
+</body>
+</html>

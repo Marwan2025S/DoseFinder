@@ -1,0 +1,6 @@
+fastapi
+uvicorn
+pydantic
+mysql-connector-python>=8.0.33
+cachetools>=5.3
+meilisearch>=0.31.0

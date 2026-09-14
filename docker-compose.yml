@@ -1,0 +1,187 @@
+services:
+  ollama:
+    image: ollama/ollama:latest
+    container_name: dms-ollama
+    ports:
+      - "${OLLAMA_HOST_PORT:-11435}:11434"
+    volumes:
+      - ollama-data:/root/.ollama
+    healthcheck:
+      test: ["CMD", "ollama", "list"]
+      interval: 30s
+      timeout: 10s
+      retries: 60
+    entrypoint: /bin/sh
+    command: -c "ollama serve & sleep 5 && if echo \"${OLLAMA_MODEL:-llama3.2}\" | grep -Eq -- '-cloud$'; then echo \"Skipping local pull for cloud model ${OLLAMA_MODEL:-llama3.2}\"; else ollama pull ${OLLAMA_MODEL:-llama3.2}; fi && wait"
+    networks:
+      - dms-network
+
+  mysql:
+    image: mysql:8.0
+    container_name: dms-mysql
+    command: --innodb-redo-log-capacity=2G
+    ports:
+      - "3307:3306"
+    environment:
+      MYSQL_ROOT_PASSWORD: ${DB_ROOT_PASSWORD}
+      MYSQL_DATABASE: ${DB_NAME}
+      MYSQL_USER: ${DB_USER}
+      MYSQL_PASSWORD: ${DB_PASSWORD}
+    volumes:
+      - mysql-data:/var/lib/mysql
+      - ./mysql/:/docker-entrypoint-initdb.d/
+
+    healthcheck:
+      test:
+        [
+          "CMD-SHELL",
+          "mysql -h127.0.0.1 -P3306 -uroot -p$$MYSQL_ROOT_PASSWORD -Nse \"SELECT COUNT(*) FROM $$MYSQL_DATABASE.__init_sentinel WHERE id = 1\" | grep -q 1"
+        ]
+      interval: 5s
+      timeout: 5s
+      retries: 120
+      start_period: 10s
+    networks:
+      - dms-network
+
+  meilisearch:
+    image: getmeili/meilisearch:latest
+    container_name: dms-meilisearch
+    ports:
+      - "7700:7700"
+    environment:
+      - MEILI_MASTER_KEY=${MEILISEARCH_KEY:-dosefinder_meili_key}
+      - MEILI_ENV=development
+    volumes:
+      - meilisearch-data:/meili_data
+    healthcheck:
+      test: ["CMD", "wget", "-q", "--spider", "http://localhost:7700/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 30
+    networks:
+      - dms-network
+
+  drug-api:
+    build:
+      context: ./drug-repo
+      dockerfile: Dockerfile
+    container_name: dms-drug-api
+    ports:
+      - "8000:8000"
+    environment:
+      - API_PORT=8000
+      - API_HOST=0.0.0.0
+      - MYSQL_HOST=mysql
+      - MYSQL_PORT=3306
+      - MYSQL_DATABASE=${DB_NAME}
+      - MYSQL_USER=${DB_USER}
+      - MYSQL_PASSWORD=${DB_PASSWORD}
+      - CACHE_MAXSIZE=${CACHE_MAXSIZE:-500}
+      - CACHE_TTL_SECONDS=${CACHE_TTL_SECONDS:-600}
+      - MEILISEARCH_URL=http://meilisearch:7700
+      - MEILISEARCH_KEY=${MEILISEARCH_KEY:-dosefinder_meili_key}
+      - SEARCH_SYNC_ON_STARTUP=${SEARCH_SYNC_ON_STARTUP:-1}
+    volumes:
+      - ./drug-repo:/app
+    depends_on:
+      mysql:
+        condition: service_healthy
+      meilisearch:
+        condition: service_started
+    restart: on-failure
+    networks:
+      - dms-network
+
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: dms-backend
+    ports:
+      - "3001:3000"
+    environment:
+      - PORT=3000
+      - NODE_ENV=development
+      - DB_HOST=mysql
+      - DB_USER=${DB_USER}
+      - DB_PASSWORD=${DB_PASSWORD}
+      - DB_NAME=${DB_NAME}
+      - JWT_SECRET=${JWT_SECRET}
+      - AUTH_HASH_SECRET=${AUTH_HASH_SECRET:-}
+      - GOOGLE_CLIENT_ID=${GOOGLE_CLIENT_ID:-}
+      - OLLAMA_HOST=ollama
+      - OLLAMA_PORT=11434
+      - OLLAMA_MODEL=${OLLAMA_MODEL:-llama3.2}
+      - OLLAMA_BASE_URL=${OLLAMA_BASE_URL:-}
+      - OLLAMA_API_KEY=${OLLAMA_API_KEY:-}
+      - CORS_ORIGINS=${CORS_ORIGINS}
+      - DRUG_API_URL=http://drug-api:8000/api
+      - EMAIL_FROM=${EMAIL_FROM}
+      - EMAIL_VERIFY_BASE_URL=${EMAIL_VERIFY_BASE_URL}
+      - EMAIL_VERIFICATION_TOKEN_TTL_MINUTES=${EMAIL_VERIFICATION_TOKEN_TTL_MINUTES}
+      - PASSWORD_RESET_OTP_TTL_MINUTES=${PASSWORD_RESET_OTP_TTL_MINUTES:-15}
+      - SMTP_HOST=${SMTP_HOST}
+      - SMTP_PORT=${SMTP_PORT}
+      - SMTP_USER=${SMTP_USER}
+      - SMTP_PASS=${SMTP_PASS}
+      - SMTP_SECURE=${SMTP_SECURE}
+      - LOG_DIR=${LOG_DIR:-/usr/src/app/logs}
+      - LOG_TO_FILE=${LOG_TO_FILE:-true}
+      - LOG_DEBUG_TO_FILE=${LOG_DEBUG_TO_FILE:-true}
+      - CONTACT_EMAIL=${CONTACT_EMAIL}
+    volumes:
+      - ./backend/src:/usr/src/app/src
+      - ./backend/logs:/usr/src/app/logs
+    depends_on:
+      mysql:
+        condition: service_healthy
+      ollama:
+        condition: service_healthy
+    networks:
+      - dms-network
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: dms-frontend
+    ports:
+      - "8080:3000"
+    environment:
+      - PORT=3000
+      - BACKEND_URL=http://backend:3000
+      - VITE_GROQ_API_KEY=${VITE_GROQ_API_KEY}
+      - VITE_GOOGLE_CLIENT_ID=${VITE_GOOGLE_CLIENT_ID:-}
+    command: npm run dev -- --host 0.0.0.0 --port 3000
+    volumes:
+      - ./frontend:/usr/src/app
+      - frontend-data:/usr/src/app/node_modules
+    depends_on:
+      - backend
+    networks:
+      - dms-network
+
+  admin-frontend:
+    build:
+      context: ./admin-frontend
+      dockerfile: Dockerfile
+    container_name: dms-admin-frontend
+    ports:
+      - "8081:3000"
+    volumes:
+      - ./admin-frontend:/usr/src/app
+    depends_on:
+      - backend
+    networks:
+      - dms-network
+
+networks:
+  dms-network:
+    driver: bridge
+
+volumes:
+  mysql-data:
+  ollama-data:
+  frontend-data:
+  meilisearch-data:

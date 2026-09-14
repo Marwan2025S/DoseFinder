@@ -1,0 +1,1550 @@
+/* DRUG VIEW SPECIFIC STYLES */
+.drug-view-page {
+    min-width: 0;
+    overflow-x: hidden;
+}
+
+/* BREADCRUMB */
+.dv-breadcrumb-bar {
+    background: #fff;
+    border-bottom: 1px solid var(--border);
+    padding: 9px 0;
+}
+
+.dv-container {
+    max-width: 1440px;
+    margin: 0 auto;
+    padding: 0 32px;
+    min-width: 0;
+}
+
+.dv-breadcrumb-bar .dv-container {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.dv-bc-item,
+.dv-sep {
+    color: var(--text-dim);
+    font-size: 12px;
+}
+
+.dv-bc-link {
+    font-size: 12px;
+    color: var(--text-muted);
+    transition: color 0.2s;
+    text-decoration: none;
+}
+
+.dv-bc-link:hover {
+    color: var(--blue);
+}
+
+.dv-bc-current {
+    font-size: 12px;
+    color: var(--blue);
+    font-weight: 500;
+}
+
+/* PAGE LAYOUT */
+.dv-page-wrap {
+    padding: 20px 0 40px;
+}
+
+.dv-main-grid {
+    display: grid;
+    grid-template-columns: 1fr 280px;
+    gap: 20px;
+    align-items: start;
+    min-width: 0;
+}
+
+.dv-left-col {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    min-width: 0;
+}
+
+.dv-right-col {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    position: sticky;
+    top: calc(var(--nav-h) + 20px);
+}
+
+/* CARDS */
+.dv-card {
+    background: var(--white);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 20px;
+    min-width: 0;
+}
+
+.dv-card-warn-bg {
+    background: #fffbeb;
+    border-color: #fde68a;
+}
+
+.dv-card-danger-soft {
+    background: #fef2f2;
+    border-color: #fecaca;
+}
+
+.dv-sidebar-card {
+    padding: 16px;
+}
+
+/* DRUG HEADER */
+.dv-drug-title-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 16px;
+    flex-wrap: wrap;
+}
+
+.dv-drug-name-block {
+    flex: 1 1 240px;
+    min-width: 0;
+}
+
+.dv-drug-name {
+    margin: 0;
+    font-size: 20px;
+    font-weight: 700;
+    color: var(--text);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+    line-height: 1.3;
+}
+
+.dv-badge-fda {
+    font-size: 10px;
+    font-weight: 600;
+    background: #dcfce7;
+    color: #16a34a;
+    border: 1px solid #bbf7d0;
+    padding: 2px 8px;
+    border-radius: 20px;
+    letter-spacing: 0.3px;
+    vertical-align: middle;
+}
+
+.dv-generic-name {
+    font-size: 12.5px;
+    color: var(--text-muted);
+    margin-top: 5px;
+    margin-bottom: 0;
+}
+
+.dv-drug-code {
+    font-size: 12.5px;
+    color: var(--text-muted);
+    margin-top: 3px;
+    margin-bottom: 0;
+}
+
+.dv-code-val {
+    font-family: monospace;
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    padding: 1px 6px;
+    font-size: 11.5px;
+    color: var(--text);
+}
+
+.dv-drug-tags {
+    display: flex;
+    gap: 8px;
+    margin-top: 12px;
+    flex-wrap: wrap;
+}
+
+.dv-tag {
+    font-size: 11px;
+    font-weight: 600;
+    padding: 3px 10px;
+    border-radius: 20px;
+    letter-spacing: 0.2px;
+}
+
+.dv-t-blue {
+    background: rgba(19, 182, 236, 0.1);
+    color: #0891b2;
+    border: 1px solid rgba(19, 182, 236, 0.25);
+}
+
+.dv-t-red {
+    background: #fef2f2;
+    color: #dc2626;
+    border: 1px solid #fecaca;
+}
+
+.dv-t-warn {
+    background: #fffbeb;
+    color: #92400e;
+    border: 1px solid #fde68a;
+}
+
+.dv-t-muted {
+    background: #f3f4f6;
+    color: #6b7280;
+    border: 1px solid #d1d5db;
+}
+
+.dv-drug-action-btns {
+    display: flex;
+    gap: 8px;
+    flex: 0 1 auto;
+    min-width: 0;
+    flex-wrap: wrap;
+    justify-content: flex-end;
+}
+
+.dv-btn-outline {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    padding: 6px 12px;
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    background: #fff;
+    font-size: 12.5px;
+    font-weight: 500;
+    cursor: pointer;
+    color: var(--text);
+    font-family: 'Inter', sans-serif;
+    transition: all .15s;
+}
+
+.dv-btn-outline:hover {
+    border-color: var(--blue);
+    color: var(--blue);
+}
+
+.dv-btn-outline:disabled {
+    opacity: 0.58;
+    cursor: not-allowed;
+    color: var(--text-dim);
+    background: var(--bg);
+}
+
+.dv-btn-outline:disabled:hover {
+    border-color: var(--border);
+    color: var(--text-dim);
+}
+
+.dv-edit-btn:not(:disabled) {
+    border-color: rgba(19, 182, 236, 0.32);
+    color: #0f77a7;
+}
+
+.btn-ai.dv-ask-dosegpt-btn {
+    padding: 6px 12px;
+    border-radius: var(--radius);
+    border-width: 1px;
+    font-size: 12.5px;
+    font-weight: 500;
+    letter-spacing: 0.01em;
+    gap: 5px;
+    box-shadow: none;
+}
+
+.btn-ai.dv-ask-dosegpt-btn .ai-gem {
+    width: 14px;
+    height: 14px;
+}
+
+.btn-ai.dv-ask-dosegpt-btn:hover {
+    box-shadow: 0 0 12px rgba(19, 182, 236, 0.16);
+}
+
+.dv-report-btn {
+    border-color: rgba(19, 182, 236, 0.25);
+    color: #0f77a7;
+}
+
+.dv-report-btn:hover {
+    border-color: var(--blue);
+}
+
+/* SECTION HEADERS */
+.dv-section-header {
+    display: flex;
+    align-items: center;
+    gap: 9px;
+    margin-bottom: 14px;
+}
+
+.dv-section-title {
+    margin: 0;
+    font-size: 14px;
+    font-weight: 600;
+}
+
+.dv-section-icon {
+    width: 26px;
+    height: 26px;
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.dv-si-blue {
+    background: rgba(19, 182, 236, 0.1);
+    color: var(--blue);
+}
+
+.dv-si-warn {
+    background: #fffbeb;
+    color: #f59e0b;
+}
+
+.dv-si-teal {
+    background: #f0fdfa;
+    color: #0d9488;
+}
+
+/* TEXT */
+.dv-section-text {
+    color: var(--text-muted);
+    font-size: 13px;
+    line-height: 1.65;
+    margin: 0;
+}
+
+.dv-dot-list {
+    padding-left: 6px;
+    margin-top: 12px;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    list-style: none;
+}
+
+.dv-dot-list li {
+    padding-left: 16px;
+    position: relative;
+    color: var(--text-muted);
+    font-size: 13px;
+    line-height: 1.55;
+    margin: 0;
+}
+
+.dv-dot-list li::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 7px;
+    width: 5px;
+    height: 5px;
+    background: var(--blue);
+    border-radius: 50%;
+}
+
+.dv-dot-list.small li {
+    font-size: 12.5px;
+}
+
+.dv-dot-list.dv-dot-list-compact {
+    margin-top: 8px;
+    gap: 5px;
+}
+
+.dv-dot-list.dv-dot-list-compact li {
+    font-size: 12.5px;
+}
+
+.dv-warning-groups {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.dv-warning-box {
+    background: #fff;
+    border: 1px solid #f1d5d5;
+    border-radius: 8px;
+    padding: 10px 12px;
+}
+
+.dv-detail-groups {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.dv-detail-box {
+    background: #fff;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 10px 12px;
+}
+
+.dv-detail-title {
+    margin: 0 0 6px;
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--blue-dark);
+    letter-spacing: 0.4px;
+    text-transform: uppercase;
+}
+
+.dv-detail-subtitle {
+    margin: -2px 0 6px;
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--text-dim);
+    letter-spacing: 0.25px;
+    text-transform: uppercase;
+}
+
+.dv-warning-title {
+    margin: 0 0 6px;
+    font-size: 11px;
+    font-weight: 700;
+    color: #991b1b;
+    letter-spacing: 0.4px;
+    text-transform: uppercase;
+}
+
+.dv-warning-subgroup+.dv-warning-subgroup {
+    margin-top: 10px;
+}
+
+.dv-warning-subtitle {
+    margin: 0 0 4px;
+    font-size: 11px;
+    font-weight: 700;
+    color: #b45309;
+    letter-spacing: 0.35px;
+    text-transform: uppercase;
+}
+
+/* MED INFO GRID */
+.dv-med-info-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+}
+
+.dv-info-label {
+    font-size: 10px;
+    font-weight: 600;
+    color: var(--text-dim);
+    letter-spacing: 0.7px;
+    text-transform: uppercase;
+    margin: 0 0 3px 0;
+}
+
+.dv-info-value {
+    font-size: 13px;
+    color: var(--text);
+    margin: 0;
+}
+
+.dv-info-value.big {
+    font-size: 22px;
+    font-weight: 700;
+}
+
+.dv-user-issues-card {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.dv-issues-empty {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 96px;
+    text-align: center;
+}
+
+.dv-issues-empty__text {
+    font-size: 13px;
+    color: var(--text-muted);
+    margin: 0;
+}
+
+.dv-user-issues-list {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.dv-user-issue {
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    background: #f8fbff;
+    padding: 12px;
+}
+
+.dv-user-issue__top {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 10px;
+}
+
+.dv-user-issue__part {
+    font-size: 13px;
+    color: var(--text);
+}
+
+.dv-user-issue__message {
+    margin: 8px 0 0;
+    color: var(--text-muted);
+    font-size: 13px;
+    line-height: 1.55;
+}
+
+.dv-user-issue__meta {
+    margin-top: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    flex-wrap: wrap;
+    font-size: 12px;
+    color: var(--text-dim);
+}
+
+.dv-user-issue__reply {
+    margin-top: 10px;
+    padding-top: 10px;
+    border-top: 1px solid rgba(148, 163, 184, 0.18);
+}
+
+.dv-user-issue__reply-text {
+    margin: 6px 0 0;
+    color: var(--text);
+    font-size: 13px;
+    line-height: 1.6;
+}
+
+.dv-report-backdrop {
+    position: fixed;
+    inset: 0;
+    z-index: 1200;
+    background: rgba(15, 27, 45, 0.52);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 24px;
+}
+
+.dv-report-modal {
+    width: min(100%, 520px);
+    background: #fff;
+    border-radius: 20px;
+    box-shadow: 0 24px 72px rgba(15, 27, 45, 0.26);
+    padding: 24px;
+    max-height: calc(100vh - 48px);
+    max-height: calc(100svh - 48px);
+    overflow-y: auto;
+}
+
+.dv-report-modal__header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 12px;
+    margin-bottom: 18px;
+}
+
+.dv-report-modal__title {
+    margin: 0;
+    font-size: 22px;
+    font-weight: 700;
+    color: var(--text);
+}
+
+.dv-report-modal__subtitle {
+    margin: 6px 0 0;
+    color: var(--text-muted);
+    font-size: 14px;
+    line-height: 1.6;
+}
+
+.dv-report-modal__close {
+    width: 34px;
+    height: 34px;
+    border-radius: 999px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--text-dim);
+}
+
+.dv-report-modal__close:hover {
+    background: var(--bg);
+    color: var(--text);
+}
+
+.dv-report-form {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.dv-report-field__label {
+    display: inline-block;
+    margin-bottom: 6px;
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--text-dim);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+.dv-report-field__input,
+.dv-report-field__textarea {
+    width: 100%;
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    background: #fff;
+    padding: 12px 14px;
+    font: inherit;
+    color: var(--text);
+}
+
+.dv-report-field__textarea {
+    min-height: 120px;
+    resize: vertical;
+}
+
+.dv-report-field__input:focus,
+.dv-report-field__textarea:focus {
+    outline: none;
+    border-color: rgba(19, 182, 236, 0.45);
+    box-shadow: 0 0 0 3px rgba(19, 182, 236, 0.12);
+}
+
+.dv-report-actions {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+/* SUB SECTIONS */
+.dv-sub-section {
+    margin-top: 16px;
+    padding-top: 16px;
+    border-top: 1px solid var(--border);
+}
+
+.dv-sub-title {
+    font-size: 12.5px;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin: 0 0 8px 0;
+}
+
+.dv-warn-text {
+    color: #92400e;
+}
+
+.dv-info-text {
+    color: #1d4ed8;
+}
+
+/* DOSAGE TABLE */
+.dv-dosage-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 4px;
+    font-size: 12.5px;
+}
+
+.dv-dosage-table th {
+    text-align: left;
+    font-size: 10px;
+    font-weight: 600;
+    color: var(--text-dim);
+    letter-spacing: 0.7px;
+    text-transform: uppercase;
+    padding: 8px 10px;
+    border-bottom: 1px solid var(--border);
+}
+
+.dv-dosage-table td {
+    padding: 11px 10px;
+    color: var(--text);
+    border-bottom: 1px solid var(--border);
+}
+
+.dv-dosage-table tr:last-child td {
+    border-bottom: none;
+}
+
+.dv-dosage-table tbody tr:hover {
+    background: var(--bg);
+}
+
+/* POPULATION TABS */
+.dv-pop-tabs {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+    gap: 0;
+    border: 1px solid #d1d5db;
+    background: #e5e7eb;
+    margin-bottom: 14px;
+    overflow: hidden;
+}
+
+.dv-pop-tab {
+    border: 0;
+    border-right: 1px solid #d1d5db;
+    background: transparent;
+    color: #5b708a;
+    font-size: 12px;
+    font-weight: 600;
+    padding: 10px 12px;
+    cursor: pointer;
+    transition: background-color 0.18s, color 0.18s;
+    text-transform: uppercase;
+    width: 100%;
+}
+
+.dv-pop-tab:hover {
+    background: #d9dee4;
+    color: #31547f;
+}
+
+.dv-pop-tab:last-child {
+    border-right: 0;
+}
+
+.dv-pop-tab.active {
+    background: #b8dceb;
+    color: #295d90;
+}
+
+.dv-pop-content {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+}
+
+.dv-pop-block {
+    padding-top: 10px;
+    border-top: 1px solid var(--border);
+}
+
+.dv-pop-forms-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 10px;
+}
+
+.dv-pop-form-chip {
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    background: #f8fafc;
+    padding: 10px;
+}
+
+.dv-pop-form-name {
+    display: block;
+    font-size: 12.5px;
+    font-weight: 600;
+    color: var(--text);
+}
+
+.dv-pop-form-strength {
+    display: block;
+    margin-top: 3px;
+    font-size: 12px;
+    color: var(--text-muted);
+}
+
+.dv-pop-dosing-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 10px;
+}
+
+.dv-pop-dosing-box {
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 10px 12px;
+    background: #fff;
+}
+
+.dv-pop-title {
+    margin: 0;
+    font-size: 12.5px;
+    font-weight: 700;
+    color: #0f172a;
+    text-transform: uppercase;
+    letter-spacing: 0.35px;
+}
+
+.dv-pop-subgroup+.dv-pop-subgroup {
+    margin-top: 10px;
+}
+
+.dv-pop-header-group+.dv-pop-header-group {
+    margin-top: 8px;
+}
+
+.dv-pop-subgroup {
+    margin-top: 8px;
+}
+
+.dv-pop-list-header {
+    margin: 2px 0 0;
+    font-size: 10px;
+    font-weight: 700;
+    color: #64748b;
+    letter-spacing: 0.45px;
+    text-transform: uppercase;
+}
+
+.dv-pop-subtitle {
+    margin: 2px 0 0;
+    font-size: 13px;
+    color: #1e293b;
+    font-weight: 700;
+    letter-spacing: 0.1px;
+}
+
+.dv-pop-header-group {
+    margin-left: 12px;
+    padding-left: 10px;
+    border-left: 2px solid #dbeafe;
+}
+
+.dv-pop-header-group .dv-dot-list.dv-dot-list-compact {
+    margin-top: 6px;
+}
+
+/* DRUG INTERACTIONS */
+.dv-interactions-wrap {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 10px;
+}
+
+.dv-interaction-row {
+    border: 1px solid #f5d08c;
+    border-radius: 8px;
+    background: #fff;
+    padding: 8px 10px;
+}
+
+.dv-interaction-summary {
+    list-style: none;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    align-items: flex-start;
+    gap: 10px;
+    cursor: pointer;
+}
+
+.dv-idrug {
+    display: block;
+    font-size: 13px;
+    font-weight: 500;
+    line-height: 1.35;
+    overflow-wrap: anywhere;
+    word-break: break-word;
+}
+
+.dv-interaction-main {
+    min-width: 0;
+}
+
+.dv-interaction-summary::-webkit-details-marker {
+    display: none;
+}
+
+.dv-interaction-meta {
+    display: flex;
+    align-items: center;
+    flex-direction: row;
+    gap: 8px;
+    margin-left: 0;
+    flex-shrink: 0;
+}
+
+.dv-interaction-expand {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 12px;
+    color: var(--text-dim);
+    font-weight: 600;
+    line-height: 0;
+}
+
+.dv-interaction-expand svg {
+    transition: transform .2s ease;
+}
+
+.dv-interaction-row[open] .dv-interaction-expand {
+    color: #1d4ed8;
+}
+
+.dv-interaction-row[open] .dv-interaction-expand svg {
+    transform: rotate(180deg);
+}
+
+.dv-interaction-desc {
+    margin: 8px 0 0;
+    font-size: 12px;
+    color: var(--text-muted);
+    line-height: 1.45;
+}
+
+.dv-sev {
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+    padding: 2px 8px;
+    border-radius: 4px;
+    white-space: nowrap;
+    border: 1px solid transparent;
+    background: #fff;
+}
+
+.dv-sev.dv-contra,
+.dv-contra {
+    color: #dc2626;
+    border-color: #dc2626;
+    background: #fff;
+}
+
+.dv-sev.dv-serious,
+.dv-serious {
+    color: #f97316;
+    border-color: #f97316;
+    background: #fff;
+}
+
+.dv-sev.dv-monitor,
+.dv-monitor {
+    color: #a16207;
+    border-color: #eab308;
+    background: #fff;
+}
+
+.dv-sev.dv-neutral,
+.dv-neutral {
+    color: #64748b;
+    border-color: #94a3b8;
+    background: #fff;
+}
+
+/* SIDE EFFECTS */
+.dv-side-effects-cols {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+}
+
+.dv-side-effects-cols .dv-warning-box {
+    border-color: var(--border);
+    background: #fff;
+}
+
+.dv-se-col-title {
+    font-size: 12.5px;
+    font-weight: 600;
+    margin: 0 0 10px 0;
+}
+
+.dv-side-band-groups {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.dv-side-band-group+.dv-side-band-group {
+    border-top: 1px solid var(--border);
+    padding-top: 10px;
+}
+
+.dv-se-band-title {
+    margin: 0 0 6px;
+    font-size: 11px;
+    font-weight: 700;
+    color: #1d4ed8;
+    letter-spacing: 0.4px;
+    text-transform: uppercase;
+}
+
+.dv-se-body-title {
+    margin: 0 0 4px;
+    font-size: 11px;
+    font-weight: 700;
+    color: #334155;
+    letter-spacing: 0.35px;
+    text-transform: uppercase;
+}
+
+.dv-se-list {
+    display: block;
+    column-count: 2;
+    column-gap: 24px;
+    list-style: none;
+    padding: 0;
+}
+
+.dv-se-list li {
+    font-size: 12.5px;
+    color: var(--text-muted);
+    padding-left: 14px;
+    position: relative;
+    margin: 0 0 6px 0;
+    break-inside: avoid;
+}
+
+.dv-se-list li::before {
+    content: '·';
+    position: absolute;
+    left: 0;
+    color: var(--text-dim);
+    font-size: 16px;
+    line-height: 1;
+    margin-top: 1px;
+}
+
+.dv-expand-btn {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-size: 12.5px;
+    color: var(--text-muted);
+    margin-top: 14px;
+    padding: 6px 0;
+    font-family: 'Inter', sans-serif;
+    border-top: 1px solid var(--border);
+    width: 100%;
+    text-align: left;
+    transition: color 0.2s;
+}
+
+.dv-expand-btn:hover {
+    color: var(--blue);
+}
+
+.dv-expand-icon {
+    transition: transform .3s;
+    margin-left: auto;
+}
+
+.dv-expand-icon.rotated {
+    transform: rotate(180deg);
+}
+
+/* PAGE META */
+.dv-page-meta-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 10px;
+    padding: 12px 0;
+}
+
+.dv-reviewed-text {
+    font-size: 12px;
+    color: var(--text-dim);
+    margin: 0;
+}
+
+.dv-meta-links {
+    display: flex;
+    gap: 16px;
+}
+
+.dv-meta-links a {
+    font-size: 12px;
+    color: var(--text-dim);
+    text-decoration: none;
+    transition: color 0.2s;
+}
+
+.dv-meta-links button {
+    font-size: 12px;
+    color: var(--text-dim);
+    text-decoration: none;
+    transition: color 0.2s;
+    background: none;
+    border: none;
+    padding: 0;
+    font: inherit;
+    cursor: pointer;
+}
+
+.dv-meta-links a:hover {
+    color: var(--blue);
+}
+
+.dv-meta-links button:hover {
+    color: var(--blue);
+}
+
+.dv-disclaimer-bar {
+    background: #f9fafb;
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 14px 16px;
+    font-size: 11.5px;
+    color: var(--text-muted);
+    line-height: 1.6;
+    text-align: center;
+}
+
+.dv-disclaimer-bar strong {
+    font-size: 12px;
+    color: var(--text);
+}
+
+/* SIDEBAR COMPONENTS */
+.dv-sb-header {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 13px;
+    font-weight: 600;
+    margin-bottom: 16px;
+    padding-bottom: 12px;
+    border-bottom: 1px solid var(--border);
+}
+
+.dv-qf-block {
+    margin-bottom: 14px;
+    padding-bottom: 14px;
+    border-bottom: 1px solid var(--border);
+}
+
+.dv-qf-block:last-of-type {
+    border-bottom: none;
+    margin-bottom: 0;
+    padding-bottom: 0;
+}
+
+.dv-qf-label {
+    font-size: 10px;
+    font-weight: 600;
+    color: var(--text-dim);
+    letter-spacing: 0.7px;
+    text-transform: uppercase;
+    margin: 0 0 4px 0;
+}
+
+.dv-qf-price {
+    font-size: 20px;
+    font-weight: 700;
+    color: var(--text);
+    margin: 0;
+}
+
+.dv-qf-pack {
+    font-size: 12px;
+    font-weight: 400;
+    color: var(--text-muted);
+}
+
+.dv-qf-note {
+    font-size: 11px;
+    color: var(--text-dim);
+    margin: 3px 0 0 0;
+}
+
+.dv-qf-hl {
+    font-size: 14px;
+    font-weight: 600;
+    margin: 0;
+}
+
+.dv-qf-status-row {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    font-size: 13px;
+    font-weight: 500;
+    margin-top: 4px;
+}
+
+.dv-green-row {
+    color: #16a34a;
+}
+
+.dv-green-dot {
+    width: 8px;
+    height: 8px;
+    background: #22c55e;
+    border-radius: 50%;
+    display: inline-block;
+}
+
+.dv-warn-row {
+    color: #92400e;
+}
+
+.dv-warn-tri {
+    font-size: 14px;
+    color: #f59e0b;
+}
+
+.dv-preg-wrap {
+    display: flex;
+    gap: 6px;
+    margin-top: 5px;
+}
+
+.dv-preg-badge {
+    width: 24px;
+    height: 24px;
+    border-radius: 4px;
+    font-size: 11px;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.dv-preg-c {
+    background: #fff7ed;
+    color: #c2410c;
+    border: 1px solid #fed7aa;
+}
+
+.dv-preg-d {
+    background: #fef2f2;
+    color: #dc2626;
+    border: 1px solid #fecaca;
+}
+
+.dv-drug-img-box {
+    margin-top: 14px;
+    border-radius: 6px;
+    overflow: hidden;
+    border: 1px solid var(--border);
+}
+
+.dv-drug-img {
+    width: 100%;
+    display: block;
+    height: 100px;
+    object-fit: cover;
+}
+
+.dv-related-list {
+    display: flex;
+    flex-direction: column;
+}
+
+.dv-related-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 0;
+    border-bottom: 1px solid var(--border);
+    text-decoration: none;
+}
+
+.dv-related-item:last-child {
+    border-bottom: none;
+}
+
+.dv-rel-name {
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--blue);
+    margin: 0;
+}
+
+.dv-rel-sub {
+    font-size: 11.5px;
+    color: var(--text-muted);
+    margin: 1px 0 0 0;
+}
+
+.dv-view-all-link {
+    display: block;
+    margin-top: 12px;
+    font-size: 12px;
+    color: var(--blue);
+    font-weight: 500;
+    text-decoration: none;
+}
+
+.dv-view-all-link:hover {
+    text-decoration: underline;
+}
+
+.dv-notes-card {
+    background: #f0f9ff;
+    border-color: #bae6fd;
+}
+
+.dv-notes-text {
+    font-size: 12.5px;
+    color: #0369a1;
+    line-height: 1.6;
+    margin: 0;
+}
+
+@media (min-width: 1400px) {
+    .dv-se-list {
+        column-count: 3;
+    }
+}
+
+/* RESPONSIVE */
+@media (max-width: 900px) {
+    .dv-main-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .dv-right-col {
+        position: static;
+    }
+}
+
+@media (max-width: 600px) {
+    .dv-breadcrumb-bar .dv-container {
+        overflow-x: auto;
+        white-space: nowrap;
+        scrollbar-width: none;
+    }
+
+    .dv-breadcrumb-bar .dv-container::-webkit-scrollbar {
+        display: none;
+    }
+
+    .dv-container {
+        padding: 0 12px;
+    }
+
+    .dv-page-wrap {
+        padding: 16px 0 28px;
+    }
+
+    .dv-card {
+        padding: 16px;
+    }
+
+    .dv-sidebar-card {
+        padding: 14px;
+    }
+
+    .dv-drug-title-row {
+        flex-direction: column;
+        gap: 14px;
+    }
+
+    .dv-drug-name {
+        font-size: clamp(22px, 7vw, 28px);
+    }
+
+    .dv-drug-action-btns {
+        width: 100%;
+        justify-content: stretch;
+    }
+
+    .dv-drug-action-btns > * {
+        flex: 1 1 calc(50% - 4px);
+        justify-content: center;
+        min-height: 38px;
+    }
+
+    .btn-ai.dv-ask-dosegpt-btn {
+        flex-basis: 100%;
+        justify-content: center;
+    }
+
+    .dv-btn-outline {
+        min-height: 38px;
+        justify-content: center;
+    }
+
+    .dv-drug-tags {
+        gap: 6px;
+    }
+
+    .dv-tag {
+        max-width: 100%;
+        overflow-wrap: anywhere;
+    }
+
+    .dv-med-info-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .dv-side-effects-cols {
+        grid-template-columns: 1fr;
+    }
+
+    .dv-se-list {
+        column-count: 1;
+    }
+
+    .dv-interactions-wrap {
+        grid-template-columns: 1fr;
+    }
+
+    .dv-pop-dosing-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .dv-pop-tabs {
+        display: flex;
+        overflow-x: auto;
+        scrollbar-width: none;
+    }
+
+    .dv-pop-tabs::-webkit-scrollbar {
+        display: none;
+    }
+
+    .dv-pop-tab {
+        flex: 0 0 auto;
+        min-width: 110px;
+        padding-inline: 14px;
+    }
+
+    .dv-pop-header-group {
+        margin-left: 0;
+        padding-left: 8px;
+    }
+
+    .dv-dosage-table {
+        display: block;
+        min-width: 520px;
+        overflow-x: auto;
+        white-space: nowrap;
+        font-size: 11.5px;
+    }
+
+    .dv-dosage-table th,
+    .dv-dosage-table td {
+        padding: 7px 6px;
+    }
+
+    .dv-report-backdrop {
+        padding: 12px;
+    }
+
+    .dv-report-modal {
+        width: 100%;
+        padding: 18px;
+        max-height: calc(100svh - 24px);
+    }
+
+    .dv-report-modal__title {
+        font-size: 20px;
+    }
+
+    .dv-report-actions {
+        justify-content: stretch;
+    }
+
+    .dv-report-actions > * {
+        width: 100%;
+        justify-content: center;
+    }
+}
+
+/* ── FDA narrative text ───────────────────────────────────────────────────── */
+/* Preserves \n line breaks and styles inline section headings                */
+.fda-text {
+    font-size: 13px;
+    color: var(--text-muted);
+    line-height: 1.55;
+    word-break: break-word;
+    overflow-wrap: anywhere;
+}
+.fda-text p.fda-para {
+    margin: 0 0 8px 0;
+}
+.fda-text p.fda-para:last-child {
+    margin-bottom: 0;
+}
+.fda-text .fda-subhead {
+    display: inline-block;
+    font-size: 10px;
+    color: var(--text-dim);
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    margin-right: 6px;
+    font-weight: 700;
+}
+.fda-text .fda-subhead.block {
+    display: block;
+    margin: 6px 0 2px 0;
+}
+
+/* ── FDA extension fields (vertical stack) ───────────────────────────────── */
+.fda-field {
+    padding: 10px 0;
+}
+.fda-field + .fda-field {
+    border-top: 1px solid var(--border);
+}
+.fda-field:first-child {
+    padding-top: 0;
+}
+.fda-field:last-child {
+    padding-bottom: 0;
+}
+.fda-field-label {
+    font-size: 10px;
+    color: var(--text-dim);
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    margin-bottom: 6px;
+    font-weight: 600;
+}
+.fda-field-value {
+    font-size: 13px;
+    color: var(--text);
+    line-height: 1.55;
+    word-break: break-word;
+    overflow-wrap: anywhere;
+}
+
+/* ── Inline FDA cross-references ─────────────────────────────────────────── */
+.dv-fda-xref {
+    color: var(--blue);
+    cursor: pointer;
+    font-size: 0.92em;
+    font-weight: 500;
+    text-decoration: none;
+}
+.dv-fda-xref:hover {
+    text-decoration: underline;
+}
+.dv-fda-xref-text {
+    color: var(--text-dim);
+    font-size: 0.92em;
+    font-style: italic;
+}
+
+/* Let block content (paragraphs) sit naturally inside dot-list items        */
+.dv-dot-list li > .fda-text {
+    display: block;
+}
+

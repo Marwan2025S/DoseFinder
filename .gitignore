@@ -1,0 +1,21 @@
+node_modules/
+.env
+dist/
+npm-debug.log
+yarn-error.log
+
+__pycache__/
+backend/logs/*
+!backend/logs/.gitkeep
+mysql_chunks/
+
+# Docker
+.DS_Store
+
+.playwright-cli
+
+# Documentation build artifacts (verification screenshots)
+docs/_verify/
+
+# Claude Code local config
+.claude/mysql/

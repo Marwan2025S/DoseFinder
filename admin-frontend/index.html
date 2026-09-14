@@ -1,0 +1,334 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>DMS Admin Console</title>
+    <link rel="stylesheet" href="./styles.css?v=20260420-admin-table-fit" />
+</head>
+<body>
+    <div class="admin-app">
+        <section class="login-screen" id="loginScreen">
+            <div class="login-card">
+                <p class="eyebrow">DoseFinder Admin</p>
+                <h1>Operations console</h1>
+                <p class="login-copy">Secure access for account, doctor, drug, issue, and audit operations.</p>
+                <form id="loginForm" class="stack-form">
+                    <label class="field">
+                        <span>Email or username</span>
+                        <input id="usernameInput" type="text" autocomplete="username" placeholder="admin or admin@dms.local" />
+                    </label>
+                    <label class="field">
+                        <span>Password</span>
+                        <input id="passwordInput" type="password" autocomplete="current-password" placeholder="Enter your password" />
+                    </label>
+                    <button id="loginButton" type="submit" class="primary-button">Login</button>
+                </form>
+                <div class="seed-note">
+                    Local seed: <strong>admin / AdminPassword1!</strong>
+                </div>
+            </div>
+        </section>
+
+        <section class="shell hidden" id="adminShell">
+            <header class="shell-header">
+                <div>
+                    <p class="eyebrow">DoseFinder Admin</p>
+                    <h1>Operations console</h1>
+                </div>
+                <div class="shell-user">
+                    <div>
+                        <span class="shell-user__label">Signed in as</span>
+                        <strong id="currentAdminName">admin</strong>
+                    </div>
+                    <button id="logoutButton" type="button" class="ghost-button">Logout</button>
+                </div>
+            </header>
+
+            <div id="statusBanner" class="status-banner hidden" role="status" aria-live="polite"></div>
+
+            <nav class="section-tabs" aria-label="Admin sections">
+                <button type="button" class="tab-button tab-button--active" data-tab="overview">Overview</button>
+                <button type="button" class="tab-button" data-tab="users">Users</button>
+                <button type="button" class="tab-button" data-tab="doctors">Doctors</button>
+                <button type="button" class="tab-button" data-tab="drugs">Drugs</button>
+                <button type="button" class="tab-button" data-tab="issues">Issues</button>
+                <button type="button" class="tab-button" data-tab="audit">Audit</button>
+            </nav>
+
+            <main class="admin-main">
+                <section class="panel" id="overviewPanel">
+                    <div class="panel-header">
+                        <div>
+                            <p class="panel-eyebrow">Overview</p>
+                            <h2>System pulse</h2>
+                        </div>
+                        <button id="refreshOverviewButton" type="button" class="ghost-button">Refresh</button>
+                    </div>
+                    <div id="overviewCards" class="metric-grid"></div>
+                    <div class="section-grid section-grid--audit">
+                        <section class="surface-block">
+                            <h3>Recent admin activity</h3>
+                            <div id="overviewAuditList" class="activity-list"></div>
+                        </section>
+                    </div>
+                </section>
+
+                <section class="panel hidden" id="usersPanel">
+                    <div class="panel-header">
+                        <div>
+                            <p class="panel-eyebrow">Users</p>
+                            <h2>Account operations</h2>
+                        </div>
+                        <form id="userSearchForm" class="inline-form">
+                            <input id="userSearchInput" type="search" placeholder="Search users" />
+                            <select id="userRoleFilter" aria-label="Role filter">
+                                <option value="">All roles</option>
+                                <option value="user">Users</option>
+                                <option value="doctor">Doctors</option>
+                                <option value="admin">Admins</option>
+                                <option value="guest">Guests</option>
+                            </select>
+                            <select id="userStatusFilter" aria-label="Account status filter">
+                                <option value="">All status</option>
+                                <option value="active">Active</option>
+                                <option value="suspended">Suspended</option>
+                            </select>
+                            <select id="userEmailFilter" aria-label="Email status filter">
+                                <option value="">All email</option>
+                                <option value="verified">Verified</option>
+                                <option value="unverified">Unverified</option>
+                            </select>
+                            <button type="submit" class="ghost-button">Search</button>
+                        </form>
+                    </div>
+                    <div class="section-grid">
+                        <section>
+                            <div class="table-wrap">
+                                <table class="data-table">
+                                    <thead>
+                                        <tr>
+                                            <th>User</th>
+                                            <th>Role</th>
+                                            <th>Email</th>
+                                            <th>Status</th>
+                                            <th>Joined</th>
+                                            <th></th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="usersTableBody"></tbody>
+                                </table>
+                            </div>
+                            <div class="table-footer">
+                                <span id="userResultsMeta">Loading users...</span>
+                                <div class="pager">
+                                    <button id="prevUserPageButton" type="button" class="ghost-button">Previous</button>
+                                    <button id="nextUserPageButton" type="button" class="ghost-button">Next</button>
+                                </div>
+                            </div>
+                        </section>
+                        <aside class="surface-block detail-panel" id="userDetailPanel"></aside>
+                    </div>
+                </section>
+
+                <section class="panel hidden" id="doctorsPanel">
+                    <div class="panel-header">
+                        <div>
+                            <p class="panel-eyebrow">Doctors</p>
+                            <h2>Verification queue</h2>
+                        </div>
+                        <form id="doctorSearchForm" class="inline-form">
+                            <input id="doctorSearchInput" type="search" placeholder="Search doctors" />
+                            <select id="doctorVerificationFilter" aria-label="Doctor verification filter">
+                                <option value="">All verification</option>
+                                <option value="pending">Pending</option>
+                                <option value="approved">Approved</option>
+                            </select>
+                            <select id="doctorStatusFilter" aria-label="Doctor account status filter">
+                                <option value="">All status</option>
+                                <option value="active">Active</option>
+                                <option value="suspended">Suspended</option>
+                            </select>
+                            <button type="submit" class="ghost-button">Search</button>
+                        </form>
+                    </div>
+                    <div class="section-grid">
+                        <section>
+                            <div class="table-wrap">
+                                <table class="data-table">
+                                    <thead>
+                                        <tr>
+                                            <th>Doctor</th>
+                                            <th>Email</th>
+                                            <th>Approval</th>
+                                            <th>Authored</th>
+                                            <th>Joined</th>
+                                            <th></th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="doctorsTableBody"></tbody>
+                                </table>
+                            </div>
+                            <div class="table-footer">
+                                <span id="doctorResultsMeta">Loading doctors...</span>
+                                <div class="pager">
+                                    <button id="prevDoctorPageButton" type="button" class="ghost-button">Previous</button>
+                                    <button id="nextDoctorPageButton" type="button" class="ghost-button">Next</button>
+                                </div>
+                            </div>
+                        </section>
+                        <aside class="surface-block detail-panel" id="doctorDetailPanel"></aside>
+                    </div>
+                </section>
+
+                <section class="panel hidden" id="drugsPanel">
+                    <div class="panel-header">
+                        <div>
+                            <p class="panel-eyebrow">Drugs</p>
+                            <h2>Catalog operations</h2>
+                        </div>
+                        <form id="drugSearchForm" class="inline-form">
+                            <input id="drugSearchInput" type="search" placeholder="Search drugs" />
+                            <select id="drugVisibilityFilter" aria-label="Drug visibility filter">
+                                <option value="">All visibility</option>
+                                <option value="visible">Visible</option>
+                                <option value="hidden">Hidden</option>
+                            </select>
+                            <select id="drugReviewFilter" aria-label="Drug review filter">
+                                <option value="">All review</option>
+                                <option value="published">Published</option>
+                                <option value="needs_review">Needs review</option>
+                            </select>
+                            <button type="submit" class="ghost-button">Search</button>
+                        </form>
+                    </div>
+                    <div class="section-grid section-grid--drugs">
+                        <section>
+                            <div class="table-wrap">
+                                <table class="data-table data-table--drugs">
+                                    <thead>
+                                        <tr>
+                                            <th>Drug</th>
+                                            <th>Source</th>
+                                            <th>Version</th>
+                                            <th>Doctor</th>
+                                            <th>Flags</th>
+                                            <th>Updated</th>
+                                            <th></th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="drugsTableBody"></tbody>
+                                </table>
+                            </div>
+                            <div class="table-footer">
+                                <span id="drugResultsMeta">Loading drugs...</span>
+                                <div class="pager">
+                                    <button id="prevDrugPageButton" type="button" class="ghost-button">Previous</button>
+                                    <button id="nextDrugPageButton" type="button" class="ghost-button">Next</button>
+                                </div>
+                            </div>
+                        </section>
+                        <aside class="surface-block detail-panel" id="drugDetailPanel"></aside>
+                    </div>
+                </section>
+
+                <section class="panel hidden" id="issuesPanel">
+                    <div class="panel-header">
+                        <div>
+                            <p class="panel-eyebrow">Issues</p>
+                            <h2>User reports</h2>
+                        </div>
+                        <form id="issueSearchForm" class="inline-form">
+                            <input id="issueSearchInput" type="search" placeholder="Search issues" />
+                            <select id="issueStatusFilter" aria-label="Issue status filter">
+                                <option value="open">Open</option>
+                                <option value="fixed">Fixed</option>
+                                <option value="closed">Closed</option>
+                                <option value="all">All status</option>
+                            </select>
+                            <button type="submit" class="ghost-button">Search</button>
+                        </form>
+                    </div>
+                    <div class="section-grid">
+                        <section>
+                            <div class="table-wrap">
+                                <table class="data-table">
+                                    <thead>
+                                        <tr>
+                                            <th>Drug</th>
+                                            <th>Part</th>
+                                            <th>Reporter</th>
+                                            <th>Status</th>
+                                            <th>Created</th>
+                                            <th></th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="issuesTableBody"></tbody>
+                                </table>
+                            </div>
+                            <div class="table-footer">
+                                <span id="issueResultsMeta">Loading issues...</span>
+                            </div>
+                        </section>
+                        <aside class="surface-block detail-panel" id="issueDetailPanel"></aside>
+                    </div>
+                </section>
+
+                <section class="panel hidden" id="auditPanel">
+                    <div class="panel-header">
+                        <div>
+                            <p class="panel-eyebrow">Audit</p>
+                            <h2>Admin action history</h2>
+                        </div>
+                        <form id="auditSearchForm" class="inline-form">
+                            <input id="auditActionInput" type="search" placeholder="Action contains" />
+                            <input id="auditEntityTypeInput" type="search" placeholder="Entity type" />
+                            <input id="auditEntityIdInput" type="search" placeholder="Entity ID" />
+                            <button type="submit" class="ghost-button">Filter</button>
+                        </form>
+                    </div>
+                    <div class="table-wrap">
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>Action</th>
+                                    <th>Entity</th>
+                                    <th>Actor</th>
+                                    <th>Reason</th>
+                                    <th>Created</th>
+                                </tr>
+                            </thead>
+                            <tbody id="auditTableBody"></tbody>
+                        </table>
+                    </div>
+                    <div class="table-footer">
+                        <span id="auditResultsMeta">Loading audit events...</span>
+                        <div class="pager">
+                            <button id="prevAuditPageButton" type="button" class="ghost-button">Previous</button>
+                            <button id="nextAuditPageButton" type="button" class="ghost-button">Next</button>
+                        </div>
+                    </div>
+                </section>
+            </main>
+        </section>
+
+        <div class="modal-backdrop hidden" id="reasonModal" role="dialog" aria-modal="true" aria-labelledby="reasonModalTitle">
+            <form class="modal-card" id="reasonModalForm">
+                <h2 id="reasonModalTitle">Confirm action</h2>
+                <p id="reasonModalMessage"></p>
+                <label class="field">
+                    <span id="reasonModalLabel">Reason</span>
+                    <textarea id="reasonModalTextarea" rows="4" placeholder="Add a concise reason"></textarea>
+                </label>
+                <p id="reasonModalError" class="form-error hidden">A reason is required.</p>
+                <div class="modal-actions">
+                    <button id="reasonModalCancel" type="button" class="ghost-button">Cancel</button>
+                    <button id="reasonModalConfirm" type="submit" class="primary-button">Continue</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script src="./app.js?v=20260421-admin-api-proxy"></script>
+</body>
+</html>

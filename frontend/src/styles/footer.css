@@ -1,0 +1,198 @@
+/* ============================================================
+   FOOTER — "Best" footer design from search results.html
+   ============================================================ */
+
+footer {
+    background: #0f172a;
+    /* var(--slate-900) */
+    color: white;
+    margin-top: 32px;
+    font-family: 'DM Sans', sans-serif;
+}
+
+.footer-inner {
+    max-width: 1280px;
+    margin: 0 auto;
+    padding: 64px 80px;
+}
+
+/* Search results page: tighter footer per dosefinder-node-1-184 */
+.search-results-page footer .footer-inner {
+    padding: 64px 80px;
+}
+
+.footer-top {
+    display: flex;
+    gap: 48px;
+    justify-content: space-between;
+    flex-wrap: wrap;
+}
+
+.footer-about {
+    max-width: 420px;
+}
+
+.footer-about h4 {
+    font-size: 20px;
+    font-weight: 700;
+    font-family: 'Lato', 'Sora', sans-serif;
+    color: #fff;
+    margin-bottom: 12px;
+}
+
+.footer-about p {
+    margin-top: 16px;
+    color: rgba(148, 163, 184, 0.8);
+    font-size: 16px;
+    line-height: 1.4;
+    font-family: 'Lato', sans-serif;
+}
+
+.footer-about .contact {
+    margin-top: 28px;
+    padding: 16px;
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 12px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.footer-about .contact h4 {
+    margin-bottom: 8px;
+    font-size: 15px;
+    font-weight: 600;
+    color: #fff;
+}
+
+.footer-about .contact a {
+    color: #13b6ec;
+    font-size: 14px;
+    text-decoration: none;
+    transition: color 0.2s;
+}
+
+.footer-about .contact a:hover {
+    color: #13b6ec;
+    /* var(--accent) */
+}
+
+.footer-links-wrap {
+    display: flex;
+    gap: 56px;
+}
+
+.footer-col h5 {
+    font-size: 15px;
+    font-weight: 800;
+    letter-spacing: -0.1px;
+    color: #fff;
+    font-family: 'Sora', sans-serif;
+}
+
+.footer-col ul {
+    list-style: none;
+    margin-top: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    padding: 0;
+}
+
+.footer-col ul li a {
+    color: rgba(255, 255, 255, 0.65);
+    font-size: 14px;
+    text-decoration: none;
+    transition: color 0.2s;
+}
+
+.footer-col ul li a:hover {
+    color: #13b6ec;
+    /* var(--accent) */
+}
+
+.footer-bottom {
+    margin-top: 48px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 20px;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+    padding-top: 28px;
+}
+
+.footer-logo {
+    font-family: 'Sora', sans-serif;
+    font-weight: 800;
+    font-size: 24px;
+    color: #fff;
+}
+
+.footer-divider {
+    margin-top: 28px;
+    border: none;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.footer-legal {
+    margin-top: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 12px;
+    font-size: 14px;
+    color: rgba(255, 255, 255, 0.5);
+}
+
+.footer-legal a {
+    color: rgba(255, 255, 255, 0.5);
+    text-decoration: none;
+    transition: color 0.2s;
+}
+
+.footer-legal button {
+    color: rgba(255, 255, 255, 0.5);
+    text-decoration: none;
+    transition: color 0.2s;
+    background: none;
+    border: none;
+    padding: 0;
+    font: inherit;
+    cursor: pointer;
+}
+
+.footer-legal a:hover {
+    color: #13b6ec;
+}
+
+.footer-legal button:hover {
+    color: #13b6ec;
+}
+
+.footer-legal-links {
+    display: flex;
+    gap: 32px;
+}
+
+/* ─── RESPONSIVE ─── */
+@media (max-width: 900px) {
+    .footer-inner {
+        padding: 40px 24px;
+    }
+
+    .footer-top {
+        flex-direction: column;
+        gap: 32px;
+    }
+
+    .footer-links-wrap {
+        gap: 40px;
+    }
+}
+
+@media (max-width: 900px) {
+    .footer-bottom {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+}
